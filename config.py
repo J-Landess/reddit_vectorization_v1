@@ -35,7 +35,8 @@ SUBREDDITS = [
 COLLECTION_CONFIG = {
     'max_posts_per_subreddit': int(os.getenv('MAX_POSTS_PER_SUBREDDIT', 20)),  # Reasonable for 13 subreddits
     'max_comments_per_post': int(os.getenv('MAX_COMMENTS_PER_POST', 50)),      # Good sample size
-    'collection_limit': int(os.getenv('COLLECTION_LIMIT', 20))                 # Manageable limit
+    'collection_limit': int(os.getenv('COLLECTION_LIMIT', 20)),                # Manageable limit
+    'filter_noise': os.getenv('FILTER_NOISE', 'true').lower() == 'true'        # Filter out bot messages and guidelines
 }
 
 # Database configuration

@@ -59,7 +59,8 @@ class RedditAnalysisPipeline:
             self.reddit_client = RedditClient(
                 client_id=REDDIT_CONFIG['client_id'],
                 client_secret=REDDIT_CONFIG['client_secret'],
-                user_agent=REDDIT_CONFIG['user_agent']
+                user_agent=REDDIT_CONFIG['user_agent'],
+                filter_noise=COLLECTION_CONFIG['filter_noise']
             )
             
             # Initialize embedding generator
