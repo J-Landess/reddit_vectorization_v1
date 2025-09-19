@@ -4,7 +4,7 @@ Main pipeline orchestrator for Reddit data analysis.
 import logging
 import os
 import sys
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 import numpy as np
 from datetime import datetime
 

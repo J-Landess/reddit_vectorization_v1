@@ -58,7 +58,7 @@ class ClusterAnalyzer:
                 self.model = hdbscan.HDBSCAN(
                     min_cluster_size=self.min_cluster_size,
                     min_samples=self.min_samples,
-                    metric='cosine'
+                    metric='euclidean'
                 )
                 self.labels_ = self.model.fit_predict(embeddings)
                 

@@ -140,8 +140,8 @@ class RedditClient:
             comments = self.get_post_comments(post['id'], max_comments_per_post)
             all_data.extend(comments)
             
-            # Rate limiting - be respectful to Reddit's API
-            time.sleep(1)
+            # Rate limiting - optimized for 100 queries/min capacity
+            time.sleep(0.6)  # ~100 queries per minute
             
         logger.info(f"Total data collected from r/{subreddit_name}: {len(all_data)} items")
         return all_data
@@ -169,8 +169,8 @@ class RedditClient:
             )
             all_data.extend(subreddit_data)
             
-            # Rate limiting between subreddits
-            time.sleep(2)
+            # Rate limiting between subreddits - optimized for API capacity
+            time.sleep(1)  # Brief pause between subreddits
             
         logger.info(f"Total data collected from all subreddits: {len(all_data)} items")
         return all_data

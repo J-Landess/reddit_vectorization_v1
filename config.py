@@ -14,7 +14,7 @@ REDDIT_CONFIG = {
     'user_agent': os.getenv('REDDIT_USER_AGENT', 'RedditAnalysisBot/1.0')
 }
 
-# Target subreddits
+# Target subreddits - Full healthcare spectrum
 SUBREDDITS = [
     'healthinsurance',
     'Medicare',
@@ -31,11 +31,11 @@ SUBREDDITS = [
     'Obamacare'
 ]
 
-# Collection settings
+# Collection settings - Balanced approach for comprehensive analysis
 COLLECTION_CONFIG = {
-    'max_posts_per_subreddit': int(os.getenv('MAX_POSTS_PER_SUBREDDIT', 1000)),
-    'max_comments_per_post': int(os.getenv('MAX_COMMENTS_PER_POST', 50)),
-    'collection_limit': int(os.getenv('COLLECTION_LIMIT', 100))
+    'max_posts_per_subreddit': int(os.getenv('MAX_POSTS_PER_SUBREDDIT', 20)),  # Reasonable for 13 subreddits
+    'max_comments_per_post': int(os.getenv('MAX_COMMENTS_PER_POST', 50)),      # Good sample size
+    'collection_limit': int(os.getenv('COLLECTION_LIMIT', 20))                 # Manageable limit
 }
 
 # Database configuration
