@@ -304,6 +304,11 @@ class RedditAnalysisPipeline:
             db_stats = self.database_manager.get_database_statistics()
             logger.info(f"Final database statistics: {db_stats}")
             
+            # Export to CSV for pandas analysis
+            logger.info("Exporting data to CSV files...")
+            csv_files = self.database_manager.export_to_csv('./csv_exports')
+            logger.info(f"CSV files exported: {list(csv_files.keys())}")
+            
             logger.info("Reddit analysis pipeline completed successfully!")
             
         except Exception as e:

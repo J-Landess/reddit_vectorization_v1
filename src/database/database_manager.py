@@ -356,6 +356,72 @@ class DatabaseManager:
         
         return updated_count
     
+    def export_to_csv(self, output_dir: str = './csv_exports') -> Dict[str, str]:
+        """
+        Export database contents to CSV files.
+        
+        Args:
+            output_dir: Directory to save CSV files
+            
+        Returns:
+            Dictionary mapping data type to file path
+        """
+        import pandas as pd
+        import os
+        
+        os.makedirs(output_dir, exist_ok=True)
+        exported_files = {}
+        
+        try:
+            # Export posts
+            cursor = self.connection.cursor()
+            cursor.execute('''
+                SELECT id, title, text, cleaned_text, author, subreddit,
+                       score, upvote_ratio, num_comments, created_utc, url,
+                       is_self, word_count, char_count, cluster_id
+                FROM posts
+            ''')
+            posts_data = cursor.fetchall()
+            posts_columns = [description[0] for description in cursor.description]
+            
+            if posts_data:
+                posts_df = pd.DataFrame(posts_data, columns=posts_columns)
+                posts_file = os.path.join(output_dir, 'reddit_posts.csv')
+                posts_df.to_csv(posts_file, index=False, encoding='utf-8')
+                exported_files['posts'] = posts_file
+                logger.info(f"Exported {len(posts_df)} posts to {posts_file}")
+            
+            # Export comments
+            cursor.execute('''
+                SELECT id, text, cleaned_text, author, post_id, score,
+                       created_utc, word_count, char_count, cluster_id
+                FROM comments
+            ''')
+            comments_data = cursor.fetchall()
+            comments_columns = [description[0] for description in cursor.description]
+            
+            if comments_data:
+                comments_df = pd.DataFrame(comments_data, columns=comments_columns)
+                comments_file = os.path.join(output_dir, 'reddit_comments.csv')
+                comments_df.to_csv(comments_file, index=False, encoding='utf-8')
+                exported_files['comments'] = comments_file
+                logger.info(f"Exported {len(comments_df)} comments to {comments_file}")
+            
+            # Export combined data
+            all_data = self.get_all_data(include_embeddings=False)
+            if all_data:
+                all_df = pd.DataFrame(all_data)
+                all_file = os.path.join(output_dir, 'reddit_all_data.csv')
+                all_df.to_csv(all_file, index=False, encoding='utf-8')
+                exported_files['all_data'] = all_file
+                logger.info(f"Exported {len(all_df)} total items to {all_file}")
+            
+        except Exception as e:
+            logger.error(f"Error exporting to CSV: {e}")
+            raise
+        
+        return exported_files
+
     def get_database_statistics(self) -> Dict[str, Any]:
         """
         Get statistics about the database contents.
