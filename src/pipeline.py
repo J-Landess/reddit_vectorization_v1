@@ -59,7 +59,8 @@ class RedditAnalysisPipeline:
             self.reddit_client = RedditClient(
                 client_id=REDDIT_CONFIG['client_id'],
                 client_secret=REDDIT_CONFIG['client_secret'],
-                user_agent=REDDIT_CONFIG['user_agent']
+                user_agent=REDDIT_CONFIG['user_agent'],
+                filter_noise=COLLECTION_CONFIG['filter_noise']
             )
             
             # Initialize embedding generator
@@ -302,6 +303,11 @@ class RedditAnalysisPipeline:
             # Get final database statistics
             db_stats = self.database_manager.get_database_statistics()
             logger.info(f"Final database statistics: {db_stats}")
+            
+            # Export to CSV for pandas analysis
+            logger.info("Exporting data to CSV files...")
+            csv_files = self.database_manager.export_to_csv('./csv_exports')
+            logger.info(f"CSV files exported: {list(csv_files.keys())}")
             
             logger.info("Reddit analysis pipeline completed successfully!")
             
