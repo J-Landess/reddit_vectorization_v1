@@ -1,12 +1,15 @@
 # Reddit Analysis Pipeline - Historical Comparison
 
-**Generated:** 2025-09-21 14:19:18
-**Total Runs:** 2
+**Generated:** 2025-09-21 15:06:19
+**Total Runs:** 5
 
 ## Run Summary
 
 | Run ID | Start Time | Status | Total Items | Clusters | Filtering % |
 |--------|------------|--------|-------------|----------|-------------|
+| 20250921_145459 | 2025-09-21T14:54:59 | completed | 4770 | 3 | 0.0% |
+| 20250921_142656 | 2025-09-21T14:26:56 | completed | 4771 | 3 | 0.0% |
+| 20250921_142122 | 2025-09-21T14:21:22 | completed | 4771 | 3 | 0.0% |
 | 20250921_141349 | 2025-09-21T14:13:49 | completed | 4771 | 3 | 0.0% |
 | 20250921_141337 | 2025-09-21T14:13:37 | completed | 500 | 3 | 75% |
 

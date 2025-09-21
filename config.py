@@ -31,11 +31,11 @@ SUBREDDITS = [
     'Obamacare'
 ]
 
-# Collection settings - Balanced approach for comprehensive analysis
+# Collection settings - SCALED UP for 50k samples
 COLLECTION_CONFIG = {
-    'max_posts_per_subreddit': int(os.getenv('MAX_POSTS_PER_SUBREDDIT', 20)),  # Reasonable for 13 subreddits
-    'max_comments_per_post': int(os.getenv('MAX_COMMENTS_PER_POST', 50)),      # Good sample size
-    'collection_limit': int(os.getenv('COLLECTION_LIMIT', 20)),                # Manageable limit
+    'max_posts_per_subreddit': int(os.getenv('MAX_POSTS_PER_SUBREDDIT', 100)),  # Increased from 20 to 100
+    'max_comments_per_post': int(os.getenv('MAX_COMMENTS_PER_POST', 200)),      # Increased from 50 to 200
+    'collection_limit': int(os.getenv('COLLECTION_LIMIT', 100)),                # Increased from 20 to 100
     'filter_noise': os.getenv('FILTER_NOISE', 'true').lower() == 'true'        # Filter out bot messages and guidelines
 }
 
@@ -57,11 +57,11 @@ CLUSTERING_CONFIG = {
     'min_samples': int(os.getenv('MIN_SAMPLES', 3))
 }
 
-# Intelligent filtering configuration
+# Intelligent filtering configuration - ADJUSTED for 50k target
 INTELLIGENT_FILTERING = {
     'enabled': os.getenv('INTELLIGENT_FILTERING', 'true').lower() == 'true',
-    'target_samples': int(os.getenv('TARGET_SAMPLES', 50000)),
-    'min_relevance_score': float(os.getenv('MIN_RELEVANCE_SCORE', 0.1)),
+    'target_samples': int(os.getenv('TARGET_SAMPLES', 50000)),  # Target 50k samples
+    'min_relevance_score': float(os.getenv('MIN_RELEVANCE_SCORE', 0.05)),  # Lowered from 0.1 to 0.05 for more samples
     'prioritize_healthcare': os.getenv('PRIORITIZE_HEALTHCARE', 'true').lower() == 'true'
 }
 

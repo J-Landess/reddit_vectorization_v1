@@ -119,6 +119,7 @@ class IntelligentHealthcareFilter:
     def is_high_quality_content(self, text: str, title: str = "") -> bool:
         """
         Determine if content is high quality and relevant.
+        UPDATED: More lenient filtering to collect more samples.
         
         Args:
             text: Post/comment text
@@ -127,7 +128,7 @@ class IntelligentHealthcareFilter:
         Returns:
             True if content should be included
         """
-        if not text or len(text.strip()) < 20:
+        if not text or len(text.strip()) < 15:  # Reduced from 20 to 15
             return False
         
         combined_text = f"{title} {text}".lower()
@@ -137,19 +138,19 @@ class IntelligentHealthcareFilter:
             if re.search(pattern, combined_text, re.IGNORECASE):
                 return False
         
-        # Check for news/link-heavy content
+        # Check for news/link-heavy content (more lenient)
         news_count = sum(1 for indicator in self.news_indicators if indicator in combined_text)
-        if news_count > 2:  # Too many news indicators
+        if news_count > 3:  # Increased from 2 to 3
             return False
         
-        # Check for minimum word count
+        # Check for minimum word count (reduced)
         word_count = len(combined_text.split())
-        if word_count < 10:
+        if word_count < 8:  # Reduced from 10 to 8
             return False
         
-        # Check for excessive punctuation (spam indicator)
+        # Check for excessive punctuation (more lenient)
         punctuation_ratio = len(re.findall(r'[!?]{2,}', combined_text)) / max(word_count, 1)
-        if punctuation_ratio > 0.1:  # More than 10% excessive punctuation
+        if punctuation_ratio > 0.15:  # Increased from 0.1 to 0.15
             return False
         
         return True
@@ -157,6 +158,7 @@ class IntelligentHealthcareFilter:
     def prioritize_content(self, posts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
         Prioritize posts based on healthcare relevance.
+        UPDATED: More lenient filtering to collect more samples.
         
         Args:
             posts: List of post dictionaries
@@ -175,7 +177,7 @@ class IntelligentHealthcareFilter:
                 post.get('title', '')
             )
             
-            # Check if content is high quality
+            # Check if content is high quality (more lenient)
             if not self.is_high_quality_content(
                 post.get('text', ''), 
                 post.get('title', '')
@@ -184,7 +186,7 @@ class IntelligentHealthcareFilter:
             
             # Add relevance score to post metadata
             post['relevance_score'] = relevance_score
-            post['is_healthcare_relevant'] = relevance_score > 0.1
+            post['is_healthcare_relevant'] = relevance_score > 0.05  # Lowered from 0.1 to 0.05
             
             prioritized_posts.append(post)
         
@@ -197,6 +199,7 @@ class IntelligentHealthcareFilter:
     def filter_comments(self, comments: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
         Filter comments for healthcare relevance.
+        UPDATED: More lenient filtering to collect more samples.
         
         Args:
             comments: List of comment dictionaries
@@ -214,13 +217,13 @@ class IntelligentHealthcareFilter:
             # Calculate relevance score
             relevance_score = self.calculate_relevance_score(text)
             
-            # Check if content is high quality
+            # Check if content is high quality (more lenient)
             if not self.is_high_quality_content(text):
                 continue
             
             # Add relevance score to comment metadata
             comment['relevance_score'] = relevance_score
-            comment['is_healthcare_relevant'] = relevance_score > 0.1
+            comment['is_healthcare_relevant'] = relevance_score > 0.05  # Lowered from 0.1 to 0.05
             
             filtered_comments.append(comment)
         
@@ -247,8 +250,9 @@ class IntelligentHealthcareFilter:
             'MedicalBilling', 'Pharmacy', 'MentalHealth', 'medical', 'Obamacare'
         ]
         
-        posts_per_subreddit = max(50, target_samples // (len(subreddits) * 10))  # Conservative estimate
-        comments_per_post = max(20, target_samples // (len(subreddits) * posts_per_subreddit))
+        # More aggressive collection for 50k target
+        posts_per_subreddit = max(100, target_samples // (len(subreddits) * 5))  # More posts per subreddit
+        comments_per_post = max(100, target_samples // (len(subreddits) * posts_per_subreddit))  # More comments per post
         
         strategy = {
             'target_samples': target_samples,
