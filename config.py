@@ -64,3 +64,12 @@ INTELLIGENT_FILTERING = {
     'min_relevance_score': float(os.getenv('MIN_RELEVANCE_SCORE', 0.1)),
     'prioritize_healthcare': os.getenv('PRIORITIZE_HEALTHCARE', 'true').lower() == 'true'
 }
+
+# Historical tracking configuration
+HISTORICAL_TRACKING = {
+    'enabled': os.getenv('HISTORICAL_TRACKING', 'true').lower() == 'true',
+    'preserve_all_runs': os.getenv('PRESERVE_ALL_RUNS', 'true').lower() == 'true',
+    'timestamp_outputs': os.getenv('TIMESTAMP_OUTPUTS', 'true').lower() == 'true',
+    'backup_database': os.getenv('BACKUP_DATABASE', 'true').lower() == 'true',
+    'create_run_summary': os.getenv('CREATE_RUN_SUMMARY', 'true').lower() == 'true'
+}

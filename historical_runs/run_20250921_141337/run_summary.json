@@ -1,0 +1,31 @@
+{
+  "run_id": "20250921_141337",
+  "start_time": "2025-09-21T14:13:37.055893",
+  "config": {
+    "intelligent_filtering": true,
+    "target_samples": 1000,
+    "subreddits": [
+      "healthinsurance",
+      "Medicare"
+    ],
+    "test_run": true
+  },
+  "status": "completed",
+  "end_time": "2025-09-21T14:13:37.062421",
+  "final_stats": {
+    "intelligent_filtering_enabled": true,
+    "target_samples": 1000,
+    "subreddits": [
+      "healthinsurance",
+      "Medicare"
+    ],
+    "total_items": 500,
+    "posts_collected": 200,
+    "comments_collected": 300,
+    "filtering_effectiveness": "75%",
+    "clustering_algorithm": "hdbscan",
+    "n_clusters": 3,
+    "n_noise": 50,
+    "silhouette_score": 0.45
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "intelligent_filtering": true,
+  "target_samples": 1000,
+  "subreddits": [
+    "healthinsurance",
+    "Medicare"
+  ],
+  "test_run": true
+}
