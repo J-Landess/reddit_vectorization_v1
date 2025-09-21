@@ -56,3 +56,11 @@ CLUSTERING_CONFIG = {
     'min_cluster_size': int(os.getenv('MIN_CLUSTER_SIZE', 5)),
     'min_samples': int(os.getenv('MIN_SAMPLES', 3))
 }
+
+# Intelligent filtering configuration
+INTELLIGENT_FILTERING = {
+    'enabled': os.getenv('INTELLIGENT_FILTERING', 'true').lower() == 'true',
+    'target_samples': int(os.getenv('TARGET_SAMPLES', 50000)),
+    'min_relevance_score': float(os.getenv('MIN_RELEVANCE_SCORE', 0.1)),
+    'prioritize_healthcare': os.getenv('PRIORITIZE_HEALTHCARE', 'true').lower() == 'true'
+}

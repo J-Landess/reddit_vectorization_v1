@@ -17,7 +17,7 @@ from embeddings.embedding_generator import EmbeddingGenerator
 from database.database_manager import DatabaseManager
 from clustering.cluster_analyzer import ClusterAnalyzer
 from analysis.analyzer import RedditAnalyzer
-from config import REDDIT_CONFIG, SUBREDDITS, COLLECTION_CONFIG, DATABASE_CONFIG, EMBEDDING_CONFIG, CLUSTERING_CONFIG
+from config import REDDIT_CONFIG, SUBREDDITS, COLLECTION_CONFIG, DATABASE_CONFIG, EMBEDDING_CONFIG, CLUSTERING_CONFIG, INTELLIGENT_FILTERING
 
 # Set up logging
 logging.basicConfig(
@@ -60,7 +60,8 @@ class RedditAnalysisPipeline:
                 client_id=REDDIT_CONFIG['client_id'],
                 client_secret=REDDIT_CONFIG['client_secret'],
                 user_agent=REDDIT_CONFIG['user_agent'],
-                filter_noise=COLLECTION_CONFIG['filter_noise']
+                filter_noise=COLLECTION_CONFIG['filter_noise'],
+                intelligent_filtering=INTELLIGENT_FILTERING['enabled']
             )
             
             # Initialize embedding generator
@@ -87,19 +88,31 @@ class RedditAnalysisPipeline:
     
     def collect_data(self) -> List[Dict[str, Any]]:
         """
-        Collect data from all specified subreddits.
+        Collect data from all specified subreddits with intelligent filtering.
         
         Returns:
             List of collected data
         """
-        logger.info("Starting data collection from Reddit")
+        logger.info("Starting data collection from Reddit with intelligent filtering")
         
         try:
-            all_data = self.reddit_client.collect_multiple_subreddits(
-                subreddit_names=SUBREDDITS,
-                max_posts_per_subreddit=COLLECTION_CONFIG['max_posts_per_subreddit'],
-                max_comments_per_post=COLLECTION_CONFIG['max_comments_per_post']
-            )
+            if INTELLIGENT_FILTERING['enabled']:
+                # Use intelligent filtering for healthcare-relevant content
+                all_data = self.reddit_client.collect_with_intelligent_filtering(
+                    subreddit_names=SUBREDDITS,
+                    target_samples=INTELLIGENT_FILTERING['target_samples'],
+                    max_posts_per_subreddit=COLLECTION_CONFIG['max_posts_per_subreddit'],
+                    max_comments_per_post=COLLECTION_CONFIG['max_comments_per_post']
+                )
+                logger.info("Used intelligent healthcare filtering for data collection")
+            else:
+                # Use standard collection
+                all_data = self.reddit_client.collect_multiple_subreddits(
+                    subreddit_names=SUBREDDITS,
+                    max_posts_per_subreddit=COLLECTION_CONFIG['max_posts_per_subreddit'],
+                    max_comments_per_post=COLLECTION_CONFIG['max_comments_per_post']
+                )
+                logger.info("Used standard data collection")
             
             logger.info(f"Collected {len(all_data)} total items from {len(SUBREDDITS)} subreddits")
             return all_data

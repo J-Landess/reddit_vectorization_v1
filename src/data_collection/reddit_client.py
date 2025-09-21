@@ -13,7 +13,8 @@ logger = logging.getLogger(__name__)
 class RedditClient:
     """Reddit API client for collecting posts and comments."""
     
-    def __init__(self, client_id: str, client_secret: str, user_agent: str, filter_noise: bool = True):
+    def __init__(self, client_id: str, client_secret: str, user_agent: str, 
+                 filter_noise: bool = True, intelligent_filtering: bool = True):
         """
         Initialize Reddit client.
         
@@ -22,6 +23,7 @@ class RedditClient:
             client_secret: Reddit API client secret
             user_agent: User agent string for API requests
             filter_noise: Whether to filter out bot messages and guidelines
+            intelligent_filtering: Whether to use intelligent healthcare filtering
         """
         self.reddit = praw.Reddit(
             client_id=client_id,
@@ -29,12 +31,27 @@ class RedditClient:
             user_agent=user_agent
         )
         self.filter_noise = filter_noise
+        self.intelligent_filtering = intelligent_filtering
+        
+        # Initialize intelligent filter if enabled
+        if intelligent_filtering:
+            try:
+                from .intelligent_filter import IntelligentHealthcareFilter
+                self.intelligent_filter = IntelligentHealthcareFilter()
+                logger.info("Intelligent healthcare filtering enabled")
+            except ImportError as e:
+                logger.warning(f"Could not import intelligent filter: {e}")
+                self.intelligent_filter = None
+                self.intelligent_filtering = False
+        else:
+            self.intelligent_filter = None
         
         # Test connection
         try:
             self.reddit.user.me()
             logger.info("Successfully connected to Reddit API")
             logger.info(f"Noise filtering: {'enabled' if filter_noise else 'disabled'}")
+            logger.info(f"Intelligent filtering: {'enabled' if intelligent_filtering else 'disabled'}")
         except Exception as e:
             logger.error(f"Failed to connect to Reddit API: {e}")
             raise
@@ -280,4 +297,78 @@ class RedditClient:
             time.sleep(1)  # Brief pause between subreddits
             
         logger.info(f"Total data collected from all subreddits: {len(all_data)} items")
+        return all_data
+    
+    def collect_with_intelligent_filtering(self, subreddit_names: List[str], 
+                                         target_samples: int = 50000,
+                                         max_posts_per_subreddit: int = 100,
+                                         max_comments_per_post: int = 50) -> List[Dict[str, Any]]:
+        """
+        Collect data with intelligent healthcare filtering and prioritization.
+        
+        Args:
+            subreddit_names: List of subreddit names
+            target_samples: Target number of samples to collect
+            max_posts_per_subreddit: Maximum posts per subreddit
+            max_comments_per_post: Maximum comments per post
+            
+        Returns:
+            Filtered and prioritized list of healthcare-relevant data
+        """
+        if not self.intelligent_filtering or not self.intelligent_filter:
+            logger.warning("Intelligent filtering not available, falling back to standard collection")
+            return self.collect_multiple_subreddits(
+                subreddit_names, max_posts_per_subreddit, max_comments_per_post
+            )
+        
+        logger.info(f"Starting intelligent collection targeting {target_samples} samples")
+        all_data = []
+        
+        for subreddit_name in subreddit_names:
+            logger.info(f"Collecting data from r/{subreddit_name} with intelligent filtering")
+            
+            # Collect posts
+            posts = self.get_subreddit_posts(subreddit_name, max_posts_per_subreddit)
+            
+            # Apply intelligent filtering to posts
+            if posts:
+                filtered_posts = self.intelligent_filter.prioritize_content(posts)
+                all_data.extend(filtered_posts)
+                
+                # Collect and filter comments for each post
+                for post in filtered_posts[:max_posts_per_subreddit]:
+                    comments = self.get_post_comments(post['id'], max_comments_per_post)
+                    
+                    if comments:
+                        filtered_comments = self.intelligent_filter.filter_comments(comments)
+                        all_data.extend(filtered_comments)
+                    
+                    # Rate limiting
+                    time.sleep(0.6)
+            
+            # Rate limiting between subreddits
+            time.sleep(1)
+            
+            # Check if we've reached target samples
+            if len(all_data) >= target_samples:
+                logger.info(f"Reached target samples ({len(all_data)}), stopping collection")
+                break
+        
+        # Final filtering and prioritization
+        if all_data:
+            # Separate posts and comments for final processing
+            posts = [item for item in all_data if item.get('type') == 'post']
+            comments = [item for item in all_data if item.get('type') == 'comment']
+            
+            # Apply final prioritization
+            final_posts = self.intelligent_filter.prioritize_content(posts)
+            final_comments = self.intelligent_filter.filter_comments(comments)
+            
+            all_data = final_posts + final_comments
+            
+            # Get filtering statistics
+            stats = self.intelligent_filter.get_filtering_stats(all_data)
+            logger.info(f"Intelligent filtering stats: {stats}")
+        
+        logger.info(f"Intelligent collection complete: {len(all_data)} items")
         return all_data
