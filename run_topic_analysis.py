@@ -282,12 +282,30 @@ def export_topic_data(results, data):
         # Create topic assignments dataframe
         topic_assignments = []
         for item in data:
+            # Prefer cleaned_text, then text, then title
+            text_value = item.get('cleaned_text', '') or item.get('text', '') or item.get('title', '')
+            # Normalize to safe, sliceable string
+            if isinstance(text_value, (int, float)):
+                # Handle NaN floats
+                try:
+                    if np.isnan(text_value):
+                        text_value = ''
+                    else:
+                        text_value = str(text_value)
+                except Exception:
+                    text_value = ''
+            elif not isinstance(text_value, str):
+                text_value = str(text_value) if text_value is not None else ''
+
+            if len(text_value) > 500:
+                text_value = text_value[:500]
+
             topic_assignments.append({
                 'id': item.get('id', ''),
                 'type': item.get('type', ''),
                 'subreddit': item.get('subreddit', ''),
                 'topic_id': item.get('topic_id', -1),
-                'text': item.get('text', '')[:500],  # Truncate for CSV
+                'text': text_value,
                 'score': item.get('score', 0),
                 'author': item.get('author', ''),
                 'created_utc': item.get('created_utc', '')
@@ -303,8 +321,8 @@ def export_topic_data(results, data):
             topic_summary_data.append({
                 'topic_id': topic_id,
                 'size': summary['size'],
-                'top_words': ', '.join(summary['top_words']),
-                'top_subreddits': ', '.join(summary['top_subreddits']),
+                'top_words': ', '.join([str(w) for w in summary['top_words']]),
+                'top_subreddits': ', '.join([str(s) for s in summary['top_subreddits']]),
                 'avg_score': summary['avg_score']
             })
         
