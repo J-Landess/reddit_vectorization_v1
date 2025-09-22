@@ -1,0 +1,72 @@
+{
+  "run_id": "20250921_204541",
+  "start_time": "2025-09-21T20:45:41.983214",
+  "config": {
+    "reddit_config": {
+      "client_id": "vzH3Ei-WEQ7vAa1RkLs-nQ",
+      "client_secret": "WvwSAAqFtGiVEXkPj3F-NtB1IvVOQg",
+      "user_agent": "script:reddit-embeddings-pipeline:v1.0 (by /u/JustinLandess)"
+    },
+    "subreddits": [
+      "healthinsurance",
+      "Medicare",
+      "Medicaid",
+      "medicalproviders",
+      "AskDocs",
+      "Health",
+      "ChronicIllness",
+      "PatientExperience",
+      "MedicalBilling",
+      "Pharmacy",
+      "MentalHealth",
+      "medical",
+      "Obamacare"
+    ],
+    "collection_config": {
+      "max_posts_per_subreddit": 100,
+      "max_comments_per_post": 200,
+      "collection_limit": 100,
+      "filter_noise": true
+    },
+    "intelligent_filtering": {
+      "enabled": true,
+      "target_samples": 50000,
+      "min_relevance_score": 0.05,
+      "prioritize_healthcare": true
+    },
+    "clustering_config": {
+      "algorithm": "hdbscan",
+      "min_cluster_size": 5,
+      "min_samples": 3
+    }
+  },
+  "status": "completed",
+  "end_time": "2025-09-21T21:50:22.418773",
+  "final_stats": {
+    "intelligent_filtering_enabled": true,
+    "target_samples": 50000,
+    "subreddits": [
+      "healthinsurance",
+      "Medicare",
+      "Medicaid",
+      "medicalproviders",
+      "AskDocs",
+      "Health",
+      "ChronicIllness",
+      "PatientExperience",
+      "MedicalBilling",
+      "Pharmacy",
+      "MentalHealth",
+      "medical",
+      "Obamacare"
+    ],
+    "total_items": 21225,
+    "posts_collected": 743,
+    "comments_collected": 20482,
+    "filtering_effectiveness": "0.0%",
+    "clustering_algorithm": "hdbscan",
+    "n_clusters": 156,
+    "n_noise": 19362,
+    "silhouette_score": 0.15081618759365714
+  }
+}

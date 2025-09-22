@@ -1,0 +1,6 @@
+cluster_id,count,top_subreddits,avg_score,avg_word_count,type_distribution
+-1,83,"Health, AskDocs, healthinsurance",250.99,29.24,"{'comment': 75, 'post': 8}"
+0,69,"healthinsurance, AskDocs, Health",486.35,67.45,"{'comment': 47, 'post': 22}"
+1,7,,1.0,36.0,{'comment': 7}
+2,10,,1.0,112.0,{'comment': 10}
+3,10,,1.0,85.0,{'comment': 10}
