@@ -1,16 +1,20 @@
 # Reddit Data Analysis Pipeline
 
-A comprehensive Python pipeline for collecting, processing, and analyzing Reddit data with embeddings and clustering. This tool is specifically designed for healthcare-related subreddits but can be easily adapted for other domains.
+A comprehensive Python pipeline for collecting, processing, and analyzing Reddit data with embeddings, clustering, and topic modeling. Designed for healthcare-related subreddits with intelligent filtering, historical run tracking, and CSV exports.
 
 ## 🚀 Features
 
 - **Reddit API Integration**: Collect posts and comments from multiple subreddits using PRAW
-- **Text Preprocessing**: Clean and preprocess text data (remove URLs, stopwords, etc.)
-- **Embedding Generation**: Generate semantic embeddings using Sentence Transformers
-- **Database Storage**: Store data and embeddings in SQLite database
-- **Clustering Analysis**: Group similar posts using k-means or HDBSCAN
-- **Visualization**: Generate comprehensive visualizations and interactive dashboards
-- **Scalable Design**: Memory-efficient processing for large datasets
+- **Intelligent Filtering**: Heuristics + keywords to prioritize healthcare experiences and de-noise content
+- **Text Preprocessing**: Clean and preprocess text data (URLs, stopwords, punctuation)
+- **Embeddings**: Sentence Transformers (default: `all-MiniLM-L6-v2`)
+- **SQLite Storage**: Persist raw/clean text, metadata, embeddings, clusters
+- **Clustering**: HDBSCAN or k-means; representative items per cluster
+- **Topic Modeling**: Gensim LDA, scikit-learn LDA, and NMF (+ BERTopic optional)
+- **CSV Exports**: Posts/comments/combined data and topic outputs to `csv_exports/` and `outputs/`
+- **Historical Tracking**: Time-stamped run directories with DB backups and reports
+- **Visualizations**: Word clouds, cluster plots, dashboards, and analysis reports
+- **Scalable Design**: Batching, sampling, and resumable collection utilities
 
 ## 📋 Target Subreddits
 
@@ -37,12 +41,18 @@ The pipeline is configured to analyze these healthcare-related subreddits:
    # The project is already in your reddit directory
    ```
 
-2. **Install dependencies**:
+2. **(Recommended) Create a conda environment**:
+   ```bash
+   conda create -n reddit-analysis python=3.9 -y
+   conda activate reddit-analysis
+   ```
+
+3. **Install dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Set up Reddit API credentials**:
+4. **Set up Reddit API credentials**:
    Create a `.env` file in the project root:
    ```bash
    REDDIT_CLIENT_ID=your_client_id_here
@@ -61,7 +71,7 @@ The pipeline is configured to analyze these healthcare-related subreddits:
 
 ### Basic Usage
 
-Run the complete pipeline:
+Run the complete pipeline (collection → preprocessing → embeddings → clustering → exports/plots):
 ```bash
 python main.py
 ```
@@ -73,25 +83,65 @@ Run with debug logging:
 python main.py --log-level DEBUG
 ```
 
+### Focused utilities
+
+- Export the database to CSVs:
+```bash
+python export_to_csv.py
+```
+
+- Analyze convexity and cluster separability (saves `convexity_analysis.png`):
+```bash
+python analyze_convexity.py
+```
+
+- Run topic modeling (Gensim LDA, sklearn LDA, NMF) and generate a report/visuals:
+```bash
+python run_topic_analysis.py
+```
+
+- Collect repeatedly until target sample count (uses intelligent filtering and historical tracking):
+```bash
+python collect_to_50k.py
+```
+
 ### Configuration
 
 You can customize the pipeline behavior by setting environment variables:
 
-```bash
-# Collection settings
-export MAX_POSTS_PER_SUBREDDIT=500
-export MAX_COMMENTS_PER_POST=25
+You can customize behavior with environment variables (see `config.py` for defaults):
 
-# Embedding settings
+```bash
+# Collection
+export MAX_POSTS_PER_SUBREDDIT=100
+export MAX_COMMENTS_PER_POST=200
+export COLLECTION_LIMIT=100
+export FILTER_NOISE=true
+
+# Intelligent filtering
+export INTELLIGENT_FILTERING=true
+export TARGET_SAMPLES=50000
+export MIN_RELEVANCE_SCORE=0.05
+export PRIORITIZE_HEALTHCARE=true
+
+# Historical tracking
+export HISTORICAL_TRACKING=true
+export PRESERVE_ALL_RUNS=true
+export TIMESTAMP_OUTPUTS=true
+export BACKUP_DATABASE=true
+export CREATE_RUN_SUMMARY=true
+
+# Embeddings
 export EMBEDDING_MODEL="all-MiniLM-L6-v2"
 export EMBEDDING_BATCH_SIZE=32
 
-# Clustering settings
-export CLUSTERING_ALGORITHM="hdbscan"
-export MIN_CLUSTER_SIZE=5
-export MIN_SAMPLES=3
+# Clustering
+export CLUSTERING_ALGORITHM="hdbscan"   # or "kmeans"
+export MIN_CLUSTER_SIZE=25
+export MIN_SAMPLES=5
+export N_CLUSTERS=20                     # for k-means
 
-# Database settings
+# Database
 export DATABASE_PATH="./data/reddit_data.db"
 ```
 
@@ -110,9 +160,13 @@ reddit/
 │   ├── database/         # SQLite database manager
 │   ├── clustering/       # Clustering algorithms
 │   ├── analysis/         # Analysis and visualization
+│   ├── topic_modeling/   # Topic modeling (LDA, NMF, BERTopic)
+│   ├── tracking/         # Historical run tracking utilities
 │   └── pipeline.py       # Main pipeline orchestrator
 ├── data/                 # Database storage
 ├── outputs/              # Generated visualizations and reports
+├── csv_exports/          # CSV exports from DB (posts, comments, combined)
+├── historical_runs/      # Time-stamped preserved runs (DB backups, reports)
 └── logs/                 # Log files
 ```
 
@@ -148,6 +202,15 @@ reddit/
 - Generates plots, word clouds, and interactive dashboards
 - Exports cluster summaries and reports
 
+### 7. Topic Modeling (`src/topic_modeling/`)
+- **TopicAnalyzer**: Gensim LDA, sklearn LDA, NMF (BERTopic optional)
+- Preprocessing, topic extraction, coherence support (for Gensim LDA)
+- `run_topic_analysis.py` generates `outputs/topic_modeling_comprehensive_report.md`
+
+### 8. Historical Tracking (`src/tracking/`)
+- **HistoricalTracker**: Creates `historical_runs/run_<timestamp>/` with:
+  - DB backups, preserved PNG/HTML/CSV, run report and comparison report
+
 ## 📊 Outputs
 
 The pipeline generates several outputs in the `outputs/` directory:
@@ -157,13 +220,20 @@ The pipeline generates several outputs in the `outputs/` directory:
   - `cluster_analysis.png`: Clustering results visualization
   - `wordcloud_*.png`: Word clouds for each cluster
   - `reddit_dashboard.html`: Interactive dashboard
+  - `topic_visualizations.png`: Topic modeling plots
 
 - **Reports**:
   - `cluster_summaries.md`: Detailed cluster analysis
   - `analysis_report.md`: Comprehensive analysis report
+  - `topic_modeling_comprehensive_report.md`: Topic modeling results
+  - `historical_runs/comparison_report.md`: Cross-run comparison
 
 - **Database**:
   - `data/reddit_data.db`: SQLite database with all data
+
+- **CSV Exports**:
+  - `csv_exports/reddit_posts.csv`, `reddit_comments.csv`, `reddit_all_data.csv`
+  - `outputs/topic_assignments.csv`, `outputs/topic_summaries.csv`
 
 ## ⚙️ Configuration Options
 
@@ -195,6 +265,7 @@ Each cluster represents a group of similar posts/comments based on semantic simi
 ### Quality Metrics
 - **Silhouette Score**: Measures cluster quality (-1 to 1, higher is better)
 - **Calinski-Harabasz Score**: Measures cluster separation (higher is better)
+ - Convexity analysis (see `analyze_convexity.py`) includes separation ratio and hull plots
 
 ## 🚨 Troubleshooting
 
@@ -216,6 +287,9 @@ Each cluster represents a group of similar posts/comments based on semantic simi
    - Ensure all dependencies are installed: `pip install -r requirements.txt`
    - Some packages may require additional system dependencies
 
+5. **CSV/Text Type Errors**:
+   - If you see `float object is not subscriptable` during topic export, ensure you’re on the latest code. We normalize non-string/NaN text before slicing in `run_topic_analysis.py`.
+
 ### Logs
 Check the `logs/` directory for detailed execution logs. Logs include:
 - Data collection progress
@@ -231,6 +305,8 @@ This is a modular design that can be easily extended:
 3. **Different embeddings**: Change `EMBEDDING_MODEL` in configuration
 4. **New clustering algorithms**: Add to `ClusterAnalyzer` class
 5. **Additional visualizations**: Extend `RedditAnalyzer` class
+6. **Topic modeling**: Adjust algorithms/params in `src/topic_modeling/`
+7. **Historical tracking**: Tune preservation in `config.py` → `HISTORICAL_TRACKING`
 
 ## 📝 License
 
