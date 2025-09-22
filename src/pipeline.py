@@ -17,7 +17,8 @@ from embeddings.embedding_generator import EmbeddingGenerator
 from database.database_manager import DatabaseManager
 from clustering.cluster_analyzer import ClusterAnalyzer
 from analysis.analyzer import RedditAnalyzer
-from config import REDDIT_CONFIG, SUBREDDITS, COLLECTION_CONFIG, DATABASE_CONFIG, EMBEDDING_CONFIG, CLUSTERING_CONFIG
+from tracking.historical_tracker import HistoricalTracker
+from config import REDDIT_CONFIG, SUBREDDITS, COLLECTION_CONFIG, DATABASE_CONFIG, EMBEDDING_CONFIG, CLUSTERING_CONFIG, INTELLIGENT_FILTERING, HISTORICAL_TRACKING
 
 # Set up logging
 logging.basicConfig(
@@ -43,6 +44,8 @@ class RedditAnalysisPipeline:
         self.database_manager = None
         self.cluster_analyzer = None
         self.analyzer = RedditAnalyzer()
+        self.historical_tracker = HistoricalTracker() if HISTORICAL_TRACKING['enabled'] else None
+        self.run_id = None
         
         # Ensure logs directory exists
         os.makedirs('logs', exist_ok=True)
@@ -60,7 +63,8 @@ class RedditAnalysisPipeline:
                 client_id=REDDIT_CONFIG['client_id'],
                 client_secret=REDDIT_CONFIG['client_secret'],
                 user_agent=REDDIT_CONFIG['user_agent'],
-                filter_noise=COLLECTION_CONFIG['filter_noise']
+                filter_noise=COLLECTION_CONFIG['filter_noise'],
+                intelligent_filtering=INTELLIGENT_FILTERING['enabled']
             )
             
             # Initialize embedding generator
@@ -87,19 +91,31 @@ class RedditAnalysisPipeline:
     
     def collect_data(self) -> List[Dict[str, Any]]:
         """
-        Collect data from all specified subreddits.
+        Collect data from all specified subreddits with intelligent filtering.
         
         Returns:
             List of collected data
         """
-        logger.info("Starting data collection from Reddit")
+        logger.info("Starting data collection from Reddit with intelligent filtering")
         
         try:
-            all_data = self.reddit_client.collect_multiple_subreddits(
-                subreddit_names=SUBREDDITS,
-                max_posts_per_subreddit=COLLECTION_CONFIG['max_posts_per_subreddit'],
-                max_comments_per_post=COLLECTION_CONFIG['max_comments_per_post']
-            )
+            if INTELLIGENT_FILTERING['enabled']:
+                # Use intelligent filtering for healthcare-relevant content
+                all_data = self.reddit_client.collect_with_intelligent_filtering(
+                    subreddit_names=SUBREDDITS,
+                    target_samples=INTELLIGENT_FILTERING['target_samples'],
+                    max_posts_per_subreddit=COLLECTION_CONFIG['max_posts_per_subreddit'],
+                    max_comments_per_post=COLLECTION_CONFIG['max_comments_per_post']
+                )
+                logger.info("Used intelligent healthcare filtering for data collection")
+            else:
+                # Use standard collection
+                all_data = self.reddit_client.collect_multiple_subreddits(
+                    subreddit_names=SUBREDDITS,
+                    max_posts_per_subreddit=COLLECTION_CONFIG['max_posts_per_subreddit'],
+                    max_comments_per_post=COLLECTION_CONFIG['max_comments_per_post']
+                )
+                logger.info("Used standard data collection")
             
             logger.info(f"Collected {len(all_data)} total items from {len(SUBREDDITS)} subreddits")
             return all_data
@@ -275,10 +291,24 @@ class RedditAnalysisPipeline:
             raise
     
     def run_full_pipeline(self) -> None:
-        """Run the complete analysis pipeline."""
-        logger.info("Starting full Reddit analysis pipeline")
+        """Run the complete analysis pipeline with historical tracking."""
+        logger.info("Starting full Reddit analysis pipeline with historical tracking")
         
         try:
+            # Start historical tracking
+            if self.historical_tracker:
+                self.run_id = self.historical_tracker.start_run({
+                    'reddit_config': REDDIT_CONFIG,
+                    'subreddits': SUBREDDITS,
+                    'collection_config': COLLECTION_CONFIG,
+                    'intelligent_filtering': INTELLIGENT_FILTERING,
+                    'clustering_config': CLUSTERING_CONFIG
+                })
+                
+                # Backup existing database
+                if HISTORICAL_TRACKING['backup_database']:
+                    self.historical_tracker.backup_database(DATABASE_CONFIG['path'])
+            
             # Setup components
             self.setup_components()
             
@@ -308,6 +338,38 @@ class RedditAnalysisPipeline:
             logger.info("Exporting data to CSV files...")
             csv_files = self.database_manager.export_to_csv('./csv_exports')
             logger.info(f"CSV files exported: {list(csv_files.keys())}")
+            
+            # Historical tracking - preserve outputs
+            if self.historical_tracker:
+                # Preserve all outputs with timestamps
+                self.historical_tracker.preserve_outputs('./outputs')
+                self.historical_tracker.preserve_outputs('./logs')
+                self.historical_tracker.preserve_outputs('./csv_exports')
+                
+                # Create comprehensive run report
+                pipeline_stats = {
+                    'intelligent_filtering_enabled': INTELLIGENT_FILTERING['enabled'],
+                    'target_samples': INTELLIGENT_FILTERING['target_samples'],
+                    'subreddits': SUBREDDITS,
+                    'total_items': len(data_with_embeddings),
+                    'posts_collected': len([item for item in data_with_embeddings if item['type'] == 'post']),
+                    'comments_collected': len([item for item in data_with_embeddings if item['type'] == 'comment']),
+                    'filtering_effectiveness': getattr(self.reddit_client.intelligent_filter, 'get_filtering_stats', lambda x: {})(data_with_embeddings).get('filtering_effectiveness', 'N/A'),
+                    'clustering_algorithm': CLUSTERING_CONFIG['algorithm'],
+                    'n_clusters': len(np.unique(cluster_labels)),
+                    'n_noise': int(np.sum(cluster_labels == -1)),
+                    'silhouette_score': self.cluster_analyzer.get_cluster_quality_metrics().get('silhouette_score', 'N/A')
+                }
+                
+                # Create run report
+                self.historical_tracker.create_run_report(pipeline_stats)
+                
+                # Update run summary
+                self.historical_tracker.update_run_summary(pipeline_stats)
+                
+                # Create comparison report if multiple runs exist
+                if len(self.historical_tracker.get_historical_runs()) > 1:
+                    self.historical_tracker.create_comparison_report()
             
             logger.info("Reddit analysis pipeline completed successfully!")
             

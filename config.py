@@ -31,11 +31,11 @@ SUBREDDITS = [
     'Obamacare'
 ]
 
-# Collection settings - Balanced approach for comprehensive analysis
+# Collection settings - SCALED UP for 50k samples
 COLLECTION_CONFIG = {
-    'max_posts_per_subreddit': int(os.getenv('MAX_POSTS_PER_SUBREDDIT', 20)),  # Reasonable for 13 subreddits
-    'max_comments_per_post': int(os.getenv('MAX_COMMENTS_PER_POST', 50)),      # Good sample size
-    'collection_limit': int(os.getenv('COLLECTION_LIMIT', 20)),                # Manageable limit
+    'max_posts_per_subreddit': int(os.getenv('MAX_POSTS_PER_SUBREDDIT', 100)),  # Increased from 20 to 100
+    'max_comments_per_post': int(os.getenv('MAX_COMMENTS_PER_POST', 200)),      # Increased from 50 to 200
+    'collection_limit': int(os.getenv('COLLECTION_LIMIT', 100)),                # Increased from 20 to 100
     'filter_noise': os.getenv('FILTER_NOISE', 'true').lower() == 'true'        # Filter out bot messages and guidelines
 }
 
@@ -55,4 +55,21 @@ CLUSTERING_CONFIG = {
     'algorithm': os.getenv('CLUSTERING_ALGORITHM', 'hdbscan'),
     'min_cluster_size': int(os.getenv('MIN_CLUSTER_SIZE', 5)),
     'min_samples': int(os.getenv('MIN_SAMPLES', 3))
+}
+
+# Intelligent filtering configuration - ADJUSTED for 50k target
+INTELLIGENT_FILTERING = {
+    'enabled': os.getenv('INTELLIGENT_FILTERING', 'true').lower() == 'true',
+    'target_samples': int(os.getenv('TARGET_SAMPLES', 50000)),  # Target 50k samples
+    'min_relevance_score': float(os.getenv('MIN_RELEVANCE_SCORE', 0.05)),  # Lowered from 0.1 to 0.05 for more samples
+    'prioritize_healthcare': os.getenv('PRIORITIZE_HEALTHCARE', 'true').lower() == 'true'
+}
+
+# Historical tracking configuration
+HISTORICAL_TRACKING = {
+    'enabled': os.getenv('HISTORICAL_TRACKING', 'true').lower() == 'true',
+    'preserve_all_runs': os.getenv('PRESERVE_ALL_RUNS', 'true').lower() == 'true',
+    'timestamp_outputs': os.getenv('TIMESTAMP_OUTPUTS', 'true').lower() == 'true',
+    'backup_database': os.getenv('BACKUP_DATABASE', 'true').lower() == 'true',
+    'create_run_summary': os.getenv('CREATE_RUN_SUMMARY', 'true').lower() == 'true'
 }

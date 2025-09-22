@@ -1,0 +1,4 @@
+subreddit,total_items,avg_score,std_score,min_score,max_score,avg_words,std_words,min_words,max_words,type_distribution
+AskDocs,10,865.1,377.26,537,1746,132.4,42.9,49,180,{'post': 10}
+Health,10,1053.6,312.13,650,1500,10.3,2.95,6,16,{'post': 10}
+healthinsurance,10,204.6,131.81,83,560,89.5,39.64,22,171,{'post': 10}
