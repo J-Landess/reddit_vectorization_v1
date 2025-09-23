@@ -416,9 +416,12 @@ class DatabaseManager:
             posts_data = cursor.fetchall()
             posts_columns = [description[0] for description in cursor.description]
             
+            from datetime import datetime
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+
             if posts_data:
                 posts_df = pd.DataFrame(posts_data, columns=posts_columns)
-                posts_file = os.path.join(output_dir, 'reddit_posts.csv')
+                posts_file = os.path.join(output_dir, f'reddit_posts_{timestamp}.csv')
                 posts_df.to_csv(posts_file, index=False, encoding='utf-8')
                 exported_files['posts'] = posts_file
                 logger.info(f"Exported {len(posts_df)} posts to {posts_file}")
@@ -434,7 +437,7 @@ class DatabaseManager:
             
             if comments_data:
                 comments_df = pd.DataFrame(comments_data, columns=comments_columns)
-                comments_file = os.path.join(output_dir, 'reddit_comments.csv')
+                comments_file = os.path.join(output_dir, f'reddit_comments_{timestamp}.csv')
                 comments_df.to_csv(comments_file, index=False, encoding='utf-8')
                 exported_files['comments'] = comments_file
                 logger.info(f"Exported {len(comments_df)} comments to {comments_file}")
@@ -443,7 +446,7 @@ class DatabaseManager:
             all_data = self.get_all_data(include_embeddings=False)
             if all_data:
                 all_df = pd.DataFrame(all_data)
-                all_file = os.path.join(output_dir, 'reddit_all_data.csv')
+                all_file = os.path.join(output_dir, f'reddit_all_data_{timestamp}.csv')
                 all_df.to_csv(all_file, index=False, encoding='utf-8')
                 exported_files['all_data'] = all_file
                 logger.info(f"Exported {len(all_df)} total items to {all_file}")
