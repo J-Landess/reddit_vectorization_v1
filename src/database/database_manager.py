@@ -23,6 +23,7 @@ class DatabaseManager:
         """
         self.db_path = db_path
         self.connection = None
+        self.current_run_id: Optional[str] = None
         
         # Ensure directory exists
         os.makedirs(os.path.dirname(db_path), exist_ok=True)
@@ -57,6 +58,7 @@ class DatabaseManager:
                     embedding BLOB,
                     embedding_dim INTEGER,
                     cluster_id INTEGER,
+                    run_id TEXT,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
@@ -76,6 +78,7 @@ class DatabaseManager:
                     embedding BLOB,
                     embedding_dim INTEGER,
                     cluster_id INTEGER,
+                    run_id TEXT,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (post_id) REFERENCES posts (id)
                 )
@@ -91,6 +94,16 @@ class DatabaseManager:
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
+
+            # Runs table
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS runs (
+                    run_id TEXT PRIMARY KEY,
+                    start_time TIMESTAMP,
+                    end_time TIMESTAMP,
+                    config_json TEXT
+                )
+            ''')
             
             # Create indexes for better performance
             cursor.execute('CREATE INDEX IF NOT EXISTS idx_posts_subreddit ON posts(subreddit)')
@@ -102,6 +115,22 @@ class DatabaseManager:
             
             self.connection.commit()
             logger.info("Database initialized successfully")
+    def register_run(self, run_id: str, config: Dict[str, Any]) -> None:
+        """Register a pipeline run and set as current."""
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute(
+                'INSERT OR IGNORE INTO runs (run_id, start_time, config_json) VALUES (?, ?, ?)',
+                (run_id, datetime.now(), json.dumps(config, default=str))
+            )
+            self.connection.commit()
+            self.current_run_id = run_id
+            logger.info(f"Registered run {run_id} in database")
+        except Exception as e:
+            logger.error(f"Error registering run {run_id}: {e}")
+            self.connection.rollback()
+            raise
+
             
         except Exception as e:
             logger.error(f"Error initializing database: {e}")
@@ -126,11 +155,11 @@ class DatabaseManager:
         try:
             for post in posts:
                 cursor.execute('''
-                    INSERT OR REPLACE INTO posts (
+                    INSERT OR IGNORE INTO posts (
                         id, title, text, cleaned_text, author, subreddit,
                         score, upvote_ratio, num_comments, created_utc, url,
-                        is_self, word_count, char_count, embedding, embedding_dim, cluster_id
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        is_self, word_count, char_count, embedding, embedding_dim, cluster_id, run_id
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     post['id'],
                     post.get('title', ''),
@@ -148,12 +177,14 @@ class DatabaseManager:
                     post.get('char_count', 0),
                     json.dumps(post.get('embedding', [])),
                     post.get('embedding_dim', 0),
-                    post.get('cluster_id')
+                    post.get('cluster_id'),
+                    self.current_run_id
                 ))
-                inserted_count += 1
+                if cursor.rowcount == 1:
+                    inserted_count += 1
             
             self.connection.commit()
-            logger.info(f"Inserted {inserted_count} posts")
+            logger.info(f"Inserted {inserted_count} new posts (ignored {len(posts) - inserted_count})")
             
         except Exception as e:
             logger.error(f"Error inserting posts: {e}")
@@ -181,10 +212,10 @@ class DatabaseManager:
         try:
             for comment in comments:
                 cursor.execute('''
-                    INSERT OR REPLACE INTO comments (
+                    INSERT OR IGNORE INTO comments (
                         id, text, cleaned_text, author, post_id, score,
-                        created_utc, word_count, char_count, embedding, embedding_dim, cluster_id
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        created_utc, word_count, char_count, embedding, embedding_dim, cluster_id, run_id
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     comment['id'],
                     comment.get('text', ''),
@@ -197,12 +228,14 @@ class DatabaseManager:
                     comment.get('char_count', 0),
                     json.dumps(comment.get('embedding', [])),
                     comment.get('embedding_dim', 0),
-                    comment.get('cluster_id')
+                    comment.get('cluster_id'),
+                    self.current_run_id
                 ))
-                inserted_count += 1
+                if cursor.rowcount == 1:
+                    inserted_count += 1
             
             self.connection.commit()
-            logger.info(f"Inserted {inserted_count} comments")
+            logger.info(f"Inserted {inserted_count} new comments (ignored {len(comments) - inserted_count})")
             
         except Exception as e:
             logger.error(f"Error inserting comments: {e}")

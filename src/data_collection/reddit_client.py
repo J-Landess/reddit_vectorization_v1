@@ -14,7 +14,8 @@ class RedditClient:
     """Reddit API client for collecting posts and comments."""
     
     def __init__(self, client_id: str, client_secret: str, user_agent: str, 
-                 filter_noise: bool = True, intelligent_filtering: bool = True):
+                 filter_noise: bool = True, intelligent_filtering: bool = True,
+                 time_filter: str = 'month'):
         """
         Initialize Reddit client.
         
@@ -32,6 +33,7 @@ class RedditClient:
         )
         self.filter_noise = filter_noise
         self.intelligent_filtering = intelligent_filtering
+        self.time_filter = time_filter
         
         # Initialize intelligent filter if enabled
         if intelligent_filtering:
@@ -100,7 +102,7 @@ class RedditClient:
         return False
 
     def get_subreddit_posts(self, subreddit_name: str, limit: int = 100, 
-                           time_filter: str = 'month') -> List[Dict[str, Any]]:
+                           time_filter: Optional[str] = None) -> List[Dict[str, Any]]:
         """
         Collect posts from a specific subreddit, filtering out noise.
         
@@ -115,8 +117,9 @@ class RedditClient:
         posts = []
         try:
             subreddit = self.reddit.subreddit(subreddit_name)
+            effective_time_filter = time_filter or self.time_filter
             
-            for post in subreddit.top(time_filter=time_filter, limit=limit):
+            for post in subreddit.top(time_filter=effective_time_filter, limit=limit):
                 author = str(post.author) if post.author else '[deleted]'
                 
                 # Filter out noise posts if enabled
@@ -256,7 +259,7 @@ class RedditClient:
         all_data = []
         
         # Collect posts
-        posts = self.get_subreddit_posts(subreddit_name, max_posts)
+        posts = self.get_subreddit_posts(subreddit_name, max_posts, None)
         all_data.extend(posts)
         
         # Collect comments for each post

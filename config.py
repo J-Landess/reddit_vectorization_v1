@@ -14,8 +14,9 @@ REDDIT_CONFIG = {
     'user_agent': os.getenv('REDDIT_USER_AGENT', 'RedditAnalysisBot/1.0')
 }
 
-# Target subreddits - Full healthcare spectrum
-SUBREDDITS = [
+# Target subreddits - Full healthcare spectrum (override with env SUBREDDITS comma-separated)
+_SUBS_ENV = os.getenv('SUBREDDITS')
+SUBREDDITS = [s.strip() for s in _SUBS_ENV.split(',')] if _SUBS_ENV else [
     'healthinsurance',
     'Medicare',
     'Medicaid',
@@ -36,7 +37,8 @@ COLLECTION_CONFIG = {
     'max_posts_per_subreddit': int(os.getenv('MAX_POSTS_PER_SUBREDDIT', 100)),  # Increased from 20 to 100
     'max_comments_per_post': int(os.getenv('MAX_COMMENTS_PER_POST', 200)),      # Increased from 50 to 200
     'collection_limit': int(os.getenv('COLLECTION_LIMIT', 100)),                # Increased from 20 to 100
-    'filter_noise': os.getenv('FILTER_NOISE', 'true').lower() == 'true'        # Filter out bot messages and guidelines
+    'filter_noise': os.getenv('FILTER_NOISE', 'true').lower() == 'true',       # Filter out bot messages and guidelines
+    'time_filter': os.getenv('TIME_FILTER', 'month')
 }
 
 # Database configuration
