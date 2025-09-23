@@ -29,7 +29,15 @@ SUBREDDITS = [s.strip() for s in _SUBS_ENV.split(',')] if _SUBS_ENV else [
     'Pharmacy',
     'MentalHealth',
     'medical',
-    'Obamacare'
+    'Obamacare',
+    'Insurance',
+    'Medical_Billing',
+    'HealthInsurance',
+    'healthcare',
+    'medicine',
+    'HealthIT',
+    'HealthcareIT',
+    'Healthcare_IT', 
 ]
 
 # Collection settings - SCALED UP for 50k samples

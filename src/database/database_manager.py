@@ -115,6 +115,10 @@ class DatabaseManager:
             
             self.connection.commit()
             logger.info("Database initialized successfully")
+        except Exception as e:
+            logger.error(f"Error initializing database: {e}")
+            raise
+
     def register_run(self, run_id: str, config: Dict[str, Any]) -> None:
         """Register a pipeline run and set as current."""
         cursor = self.connection.cursor()
@@ -129,11 +133,6 @@ class DatabaseManager:
         except Exception as e:
             logger.error(f"Error registering run {run_id}: {e}")
             self.connection.rollback()
-            raise
-
-            
-        except Exception as e:
-            logger.error(f"Error initializing database: {e}")
             raise
     
     def insert_posts(self, posts: List[Dict[str, Any]]) -> int:
