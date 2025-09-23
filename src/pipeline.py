@@ -64,7 +64,8 @@ class RedditAnalysisPipeline:
                 client_secret=REDDIT_CONFIG['client_secret'],
                 user_agent=REDDIT_CONFIG['user_agent'],
                 filter_noise=COLLECTION_CONFIG['filter_noise'],
-                intelligent_filtering=INTELLIGENT_FILTERING['enabled']
+                intelligent_filtering=INTELLIGENT_FILTERING['enabled'],
+                time_filter=COLLECTION_CONFIG.get('time_filter', 'month')
             )
             
             # Initialize embedding generator
@@ -311,6 +312,16 @@ class RedditAnalysisPipeline:
             
             # Setup components
             self.setup_components()
+            
+            # Register run in DB and set current run_id
+            if self.run_id:
+                self.database_manager.register_run(self.run_id, {
+                    'reddit_config': REDDIT_CONFIG,
+                    'subreddits': SUBREDDITS,
+                    'collection_config': COLLECTION_CONFIG,
+                    'intelligent_filtering': INTELLIGENT_FILTERING,
+                    'clustering_config': CLUSTERING_CONFIG
+                })
             
             # Collect data
             raw_data = self.collect_data()

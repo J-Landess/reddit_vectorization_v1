@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import List, Dict, Any, Optional, Tuple
+from datetime import datetime
 from collections import Counter
 from wordcloud import WordCloud
 import plotly.express as px
@@ -28,6 +29,7 @@ class RedditAnalyzer:
             output_dir: Directory to save output files
         """
         self.output_dir = output_dir
+        self.timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         os.makedirs(output_dir, exist_ok=True)
         
         # Set plotting style
@@ -136,9 +138,10 @@ class RedditAnalyzer:
             plt.savefig(save_path, dpi=300, bbox_inches='tight')
             logger.info(f"Saved subreddit visualization to {save_path}")
         else:
-            plt.savefig(os.path.join(self.output_dir, 'subreddit_analysis.png'), 
+            filename = f"subreddit_analysis_{self.timestamp}.png"
+            plt.savefig(os.path.join(self.output_dir, filename), 
                        dpi=300, bbox_inches='tight')
-            logger.info("Saved subreddit visualization")
+            logger.info(f"Saved subreddit visualization: {filename}")
         
         plt.close()
     
@@ -200,9 +203,10 @@ class RedditAnalyzer:
             plt.savefig(save_path, dpi=300, bbox_inches='tight')
             logger.info(f"Saved cluster visualization to {save_path}")
         else:
-            plt.savefig(os.path.join(self.output_dir, 'cluster_analysis.png'), 
+            filename = f"cluster_analysis_{self.timestamp}.png"
+            plt.savefig(os.path.join(self.output_dir, filename), 
                        dpi=300, bbox_inches='tight')
-            logger.info("Saved cluster visualization")
+            logger.info(f"Saved cluster visualization: {filename}")
         
         plt.close()
     
@@ -259,7 +263,8 @@ class RedditAnalyzer:
             plt.savefig(save_path, dpi=300, bbox_inches='tight')
             logger.info(f"Saved word cloud to {save_path}")
         else:
-            filename = f'wordcloud_cluster_{cluster_id}.png' if cluster_id is not None else 'wordcloud_all.png'
+            base = f'wordcloud_cluster_{cluster_id}' if cluster_id is not None else 'wordcloud_all'
+            filename = f"{base}_{self.timestamp}.png"
             plt.savefig(os.path.join(self.output_dir, filename), 
                        dpi=300, bbox_inches='tight')
             logger.info(f"Saved word cloud: {filename}")
