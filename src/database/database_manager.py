@@ -119,6 +119,36 @@ class DatabaseManager:
             logger.error(f"Error initializing database: {e}")
             raise
 
+        # Ensure sentiment columns exist (migrate if necessary)
+        try:
+            self._ensure_sentiment_columns()
+        except Exception as e:
+            logger.error(f"Error ensuring sentiment columns: {e}")
+            raise
+
+    def _ensure_sentiment_columns(self) -> None:
+        """Add sentiment and confidence columns to posts/comments if missing."""
+        cursor = self.connection.cursor()
+
+        def column_exists(table: str, column: str) -> bool:
+            cursor.execute(f"PRAGMA table_info({table})")
+            cols = [row[1] for row in cursor.fetchall()]
+            return column in cols
+
+        # Posts table
+        if not column_exists('posts', 'sentiment'):
+            cursor.execute('ALTER TABLE posts ADD COLUMN sentiment TEXT')
+        if not column_exists('posts', 'confidence'):
+            cursor.execute('ALTER TABLE posts ADD COLUMN confidence REAL')
+
+        # Comments table
+        if not column_exists('comments', 'sentiment'):
+            cursor.execute('ALTER TABLE comments ADD COLUMN sentiment TEXT')
+        if not column_exists('comments', 'confidence'):
+            cursor.execute('ALTER TABLE comments ADD COLUMN confidence REAL')
+
+        self.connection.commit()
+
     def register_run(self, run_id: str, config: Dict[str, Any]) -> None:
         """Register a pipeline run and set as current."""
         cursor = self.connection.cursor()
@@ -157,8 +187,9 @@ class DatabaseManager:
                     INSERT OR IGNORE INTO posts (
                         id, title, text, cleaned_text, author, subreddit,
                         score, upvote_ratio, num_comments, created_utc, url,
-                        is_self, word_count, char_count, embedding, embedding_dim, cluster_id, run_id
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        is_self, word_count, char_count, embedding, embedding_dim, cluster_id, run_id,
+                        sentiment, confidence
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     post['id'],
                     post.get('title', ''),
@@ -177,7 +208,9 @@ class DatabaseManager:
                     json.dumps(post.get('embedding', [])),
                     post.get('embedding_dim', 0),
                     post.get('cluster_id'),
-                    self.current_run_id
+                    self.current_run_id,
+                    post.get('sentiment'),
+                    post.get('confidence')
                 ))
                 if cursor.rowcount == 1:
                     inserted_count += 1
@@ -213,8 +246,9 @@ class DatabaseManager:
                 cursor.execute('''
                     INSERT OR IGNORE INTO comments (
                         id, text, cleaned_text, author, post_id, score,
-                        created_utc, word_count, char_count, embedding, embedding_dim, cluster_id, run_id
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        created_utc, word_count, char_count, embedding, embedding_dim, cluster_id, run_id,
+                        sentiment, confidence
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     comment['id'],
                     comment.get('text', ''),
@@ -228,7 +262,9 @@ class DatabaseManager:
                     json.dumps(comment.get('embedding', [])),
                     comment.get('embedding_dim', 0),
                     comment.get('cluster_id'),
-                    self.current_run_id
+                    self.current_run_id,
+                    comment.get('sentiment'),
+                    comment.get('confidence')
                 ))
                 if cursor.rowcount == 1:
                     inserted_count += 1
@@ -261,7 +297,7 @@ class DatabaseManager:
             posts_query = '''
                 SELECT id, title, text, cleaned_text, author, subreddit,
                        score, upvote_ratio, num_comments, created_utc, url,
-                       is_self, word_count, char_count, cluster_id
+                       is_self, word_count, char_count, cluster_id, sentiment, confidence
             '''
             if include_embeddings:
                 posts_query += ', embedding, embedding_dim'
@@ -281,7 +317,7 @@ class DatabaseManager:
             # Get comments
             comments_query = '''
                 SELECT id, text, cleaned_text, author, post_id, score,
-                       created_utc, word_count, char_count, cluster_id
+                       created_utc, word_count, char_count, cluster_id, sentiment, confidence
             '''
             if include_embeddings:
                 comments_query += ', embedding, embedding_dim'
@@ -410,7 +446,7 @@ class DatabaseManager:
             cursor.execute('''
                 SELECT id, title, text, cleaned_text, author, subreddit,
                        score, upvote_ratio, num_comments, created_utc, url,
-                       is_self, word_count, char_count, cluster_id
+                       is_self, word_count, char_count, cluster_id, sentiment, confidence
                 FROM posts
             ''')
             posts_data = cursor.fetchall()
@@ -429,7 +465,7 @@ class DatabaseManager:
             # Export comments
             cursor.execute('''
                 SELECT id, text, cleaned_text, author, post_id, score,
-                       created_utc, word_count, char_count, cluster_id
+                       created_utc, word_count, char_count, cluster_id, sentiment, confidence
                 FROM comments
             ''')
             comments_data = cursor.fetchall()

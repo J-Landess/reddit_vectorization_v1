@@ -81,6 +81,13 @@ Optional Environment Variables:
         default='INFO',
         help='Set the logging level (default: INFO)'
     )
+
+    parser.add_argument(
+        '--analyzer',
+        choices=['vader', 'transformer'],
+        default=os.getenv('SENTIMENT_ANALYZER', 'vader'),
+        help='Sentiment analyzer to use (default: vader)'
+    )
     
     parser.add_argument(
         '--version',
@@ -109,7 +116,7 @@ Optional Environment Variables:
     try:
         # Initialize and run pipeline
         logger.info("Initializing Reddit Analysis Pipeline")
-        pipeline = RedditAnalysisPipeline()
+        pipeline = RedditAnalysisPipeline(analyzer_type=args.analyzer)
         
         logger.info("Starting pipeline execution")
         pipeline.run_full_pipeline()
