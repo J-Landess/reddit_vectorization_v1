@@ -83,11 +83,40 @@ Run with debug logging:
 python main.py --log-level DEBUG
 ```
 
+### Sentiment Analyzer Selection
+
+You can choose the sentiment analyzer:
+
+```bash
+# Use default VADER
+python main.py --analyzer vader
+
+# Use Hugging Face transformer (distilbert-sst2)
+python main.py --analyzer transformer
+```
+
+Environment variable alternative:
+
+```bash
+export SENTIMENT_ANALYZER=transformer
+python main.py
+```
+
 ### Focused utilities
 
 - Export the database to CSVs:
 ```bash
 python export_to_csv.py
+```
+
+- Sandbox test both sentiment analyzers on sample texts (no DB writes):
+```bash
+python sentiment_sandbox.py
+```
+
+- Evaluate analyzers on SST-2 or fallback mini dataset:
+```bash
+python evaluate_analyzers.py
 ```
 
 - Analyze convexity and cluster separability (saves `convexity_analysis.png`):

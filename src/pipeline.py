@@ -17,6 +17,7 @@ from embeddings.embedding_generator import EmbeddingGenerator
 from database.database_manager import DatabaseManager
 from clustering.cluster_analyzer import ClusterAnalyzer
 from analysis.analyzer import RedditAnalyzer
+from sentiment import SentimentAnalyzer, VaderSentimentAnalyzer, TransformerSentimentAnalyzer
 from tracking.historical_tracker import HistoricalTracker
 from config import REDDIT_CONFIG, SUBREDDITS, COLLECTION_CONFIG, DATABASE_CONFIG, EMBEDDING_CONFIG, CLUSTERING_CONFIG, INTELLIGENT_FILTERING, HISTORICAL_TRACKING
 
@@ -36,7 +37,7 @@ logger = logging.getLogger(__name__)
 class RedditAnalysisPipeline:
     """Main pipeline for Reddit data collection, processing, and analysis."""
     
-    def __init__(self):
+    def __init__(self, analyzer_type: str = 'vader'):
         """Initialize the pipeline components."""
         self.reddit_client = None
         self.text_cleaner = TextCleaner()
@@ -44,13 +45,21 @@ class RedditAnalysisPipeline:
         self.database_manager = None
         self.cluster_analyzer = None
         self.analyzer = RedditAnalyzer()
+        self.sentiment_analyzer: Optional[SentimentAnalyzer] = None
         self.historical_tracker = HistoricalTracker() if HISTORICAL_TRACKING['enabled'] else None
         self.run_id = None
         
         # Ensure logs directory exists
         os.makedirs('logs', exist_ok=True)
         
-        logger.info("Reddit Analysis Pipeline initialized")
+        # Initialize chosen sentiment analyzer
+        analyzer_type = (analyzer_type or 'vader').lower()
+        if analyzer_type == 'transformer':
+            self.sentiment_analyzer = TransformerSentimentAnalyzer()
+        else:
+            self.sentiment_analyzer = VaderSentimentAnalyzer()
+
+        logger.info(f"Reddit Analysis Pipeline initialized (sentiment: {analyzer_type})")
     
     def setup_components(self):
         """Set up all pipeline components."""
@@ -139,6 +148,14 @@ class RedditAnalysisPipeline:
         
         try:
             processed_data = self.text_cleaner.preprocess_reddit_data(raw_data)
+
+            # Sentiment analysis
+            if self.sentiment_analyzer:
+                for item in processed_data:
+                    text_source = item.get('cleaned_text') or item.get('text') or ''
+                    label, conf = self.sentiment_analyzer.analyze(text_source)
+                    item['sentiment'] = label
+                    item['confidence'] = float(conf)
             
             # Get preprocessing statistics
             stats = self.text_cleaner.get_text_statistics(processed_data)
