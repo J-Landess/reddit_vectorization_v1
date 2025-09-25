@@ -1,6 +1,11 @@
 from typing import Tuple
+import sys
+import os
 
-from .base import SentimentAnalyzer
+# Add the project root to Python path to enable imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+
+from src.sentiment.base import SentimentAnalyzer
 
 
 class VaderSentimentAnalyzer(SentimentAnalyzer):

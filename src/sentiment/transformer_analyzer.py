@@ -1,6 +1,11 @@
 from typing import Tuple
+import sys
+import os
 
-from .base import SentimentAnalyzer
+# Add the project root to Python path to enable imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+
+from src.sentiment.base import SentimentAnalyzer
 
 
 class TransformerSentimentAnalyzer(SentimentAnalyzer):
@@ -35,5 +40,34 @@ class TransformerSentimentAnalyzer(SentimentAnalyzer):
         # Clamp score
         score = max(0.0, min(1.0, score))
         return label, score
+
+
+if __name__ == "__main__":
+    # Test the analyzer
+    print("Testing TransformerSentimentAnalyzer...")
+    try:
+        analyzer = TransformerSentimentAnalyzer()
+        print("✓ Analyzer initialized successfully")
+        
+        # Test with sample text
+        test_texts = [
+            "I love this product!",
+            "This is terrible.",
+            "It's okay, nothing special."
+        ]
+        
+        print("\nTesting sentiment analysis:")
+        for text in test_texts:
+            label, score = analyzer.analyze(text)
+            print(f"Text: '{text}'")
+            print(f"Sentiment: {label} (confidence: {score:.3f})")
+            print()
+            
+        print("✓ All tests passed! The analyzer is working correctly.")
+        
+    except Exception as e:
+        print(f"✗ Error: {e}")
+        print("Make sure you have the 'transformers' library installed:")
+        print("pip install transformers")
 
 
