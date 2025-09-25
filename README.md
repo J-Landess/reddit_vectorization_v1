@@ -32,6 +32,13 @@ The pipeline is configured to analyze these healthcare-related subreddits:
 - r/MentalHealth
 - r/medical
 - r/Obamacare
+ - r/Insurance
+ - r/HealthInsurance
+ - r/healthcare
+ - r/medicine
+ - r/HealthIT
+ - r/HealthcareIT
+ - r/Healthcare_IT
 
 ## 🛠️ Installation
 
@@ -74,6 +81,11 @@ The pipeline is configured to analyze these healthcare-related subreddits:
 Run the complete pipeline (collection → preprocessing → embeddings → clustering → exports/plots):
 ```bash
 python main.py
+```
+
+# Example: run full pipeline with transformer sentiment
+```bash
+python main.py --analyzer transformer
 ```
 
 ### Advanced Usage
@@ -134,9 +146,16 @@ python run_topic_analysis.py
 python collect_to_50k.py
 ```
 
-### Configuration
+- Analyze existing database with sentiment (no new collection):
+```bash
+python analyze_existing_data.py --analyzer vader
+# or use a transformer (slower, more accurate)
+python analyze_existing_data.py --analyzer transformer
+# optional: process a small sample while testing
+python analyze_existing_data.py --analyzer vader --limit 500
+```
 
-You can customize the pipeline behavior by setting environment variables:
+### Configuration
 
 You can customize behavior with environment variables (see `config.py` for defaults):
 
@@ -146,6 +165,10 @@ export MAX_POSTS_PER_SUBREDDIT=100
 export MAX_COMMENTS_PER_POST=200
 export COLLECTION_LIMIT=100
 export FILTER_NOISE=true
+export TIME_FILTER=month     # hour|day|week|month|year|all
+
+# Subreddits: override default list (comma-separated)
+export SUBREDDITS="healthinsurance,Medicare,Medicaid,Pharmacy"
 
 # Intelligent filtering
 export INTELLIGENT_FILTERING=true
@@ -166,12 +189,15 @@ export EMBEDDING_BATCH_SIZE=32
 
 # Clustering
 export CLUSTERING_ALGORITHM="hdbscan"   # or "kmeans"
-export MIN_CLUSTER_SIZE=25
-export MIN_SAMPLES=5
-export N_CLUSTERS=20                     # for k-means
+export MIN_CLUSTER_SIZE=5
+export MIN_SAMPLES=3
+# export N_CLUSTERS=20                    # only if CLUSTERING_ALGORITHM=kmeans
 
 # Database
 export DATABASE_PATH="./data/reddit_data.db"
+
+# Sentiment analyzer (for main pipeline)
+export SENTIMENT_ANALYZER=vader          # or transformer
 ```
 
 ## 📁 Project Structure
