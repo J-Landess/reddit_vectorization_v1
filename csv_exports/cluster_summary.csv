@@ -1,6 +1,398 @@
 cluster_id,count,top_subreddits,avg_score,avg_word_count,type_distribution
--1,83,"Health, AskDocs, healthinsurance",250.99,29.24,"{'comment': 75, 'post': 8}"
-0,69,"healthinsurance, AskDocs, Health",486.35,67.45,"{'comment': 47, 'post': 22}"
-1,7,,1.0,36.0,{'comment': 7}
-2,10,,1.0,112.0,{'comment': 10}
-3,10,,1.0,85.0,{'comment': 10}
+-1,29879,"Medicaid, ChronicIllness, Medicare",16.82,33.41,"{'comment': 28982, 'post': 897}"
+0,1733,"Health, Obamacare, medical",35.96,33.16,"{'comment': 1680, 'post': 53}"
+1,13,,0.85,26.31,{'comment': 13}
+2,20,,1.7,59.65,{'comment': 20}
+3,13,,1.0,74.62,{'comment': 13}
+4,5,,1.8,8.0,{'comment': 5}
+5,3,,2.67,10.33,{'comment': 3}
+6,6,,29.5,8.0,{'comment': 6}
+7,5,,3.6,7.6,{'comment': 5}
+8,10,,2.7,10.9,{'comment': 10}
+9,6,,1.17,86.17,{'comment': 6}
+10,5,,0.2,9.6,{'comment': 5}
+11,18,ChronicIllness,121.78,54.61,"{'comment': 17, 'post': 1}"
+12,3,,7.33,16.33,{'comment': 3}
+13,3,,2.0,8.67,{'comment': 3}
+14,10,,11.9,9.9,{'comment': 10}
+15,4,,6.0,8.75,{'comment': 4}
+16,12,,4.67,5.5,{'comment': 12}
+17,8,,1.88,13.75,{'comment': 8}
+18,4,,4.5,7.0,{'comment': 4}
+19,15,,11.33,37.33,{'comment': 15}
+20,4,,7.5,17.0,{'comment': 4}
+21,5,,17.0,15.6,{'comment': 5}
+22,5,Insurance,4.4,57.8,"{'comment': 4, 'post': 1}"
+23,5,,23.0,89.2,{'comment': 5}
+24,11,,16.27,26.55,{'comment': 11}
+25,6,,15.5,20.83,{'comment': 6}
+26,7,,3.0,11.14,{'comment': 7}
+27,2,,-1.0,10.5,{'comment': 2}
+28,3,,21.33,9.67,{'comment': 3}
+29,14,,2.79,7.36,{'comment': 14}
+30,4,,5.0,30.25,{'comment': 4}
+31,5,medicine,55.0,38.0,"{'comment': 4, 'post': 1}"
+32,4,,2.5,6.5,{'comment': 4}
+33,17,,18.47,19.35,{'comment': 17}
+34,7,,8.43,26.86,{'comment': 7}
+35,11,medical,10.91,56.64,"{'comment': 10, 'post': 1}"
+36,30,"healthinsurance, ChronicIllness",8.43,48.33,"{'comment': 28, 'post': 2}"
+37,10,Pharmacy,5.2,37.7,"{'comment': 9, 'post': 1}"
+38,6,,33.33,19.17,{'comment': 6}
+39,13,medicine,36.38,37.46,"{'comment': 12, 'post': 1}"
+40,5,AskDocs,69.8,96.6,"{'comment': 4, 'post': 1}"
+41,5,,1.0,8.2,{'comment': 5}
+42,8,medical,5.88,76.5,"{'comment': 7, 'post': 1}"
+43,5,,4.0,9.8,{'comment': 5}
+44,8,,13.62,22.25,{'comment': 8}
+45,4,,-5.0,17.75,{'comment': 4}
+46,7,,7.86,19.14,{'comment': 7}
+47,5,HealthIT,5.2,64.8,"{'comment': 4, 'post': 1}"
+48,5,,14.8,8.6,{'comment': 5}
+49,3,,0.33,45.67,{'comment': 3}
+50,5,,12.4,101.8,{'comment': 5}
+51,4,,8.25,10.0,{'comment': 4}
+52,13,medical,12.92,46.08,"{'comment': 11, 'post': 2}"
+53,7,,10.14,44.29,{'comment': 7}
+54,9,healthcare,2.22,66.0,"{'comment': 8, 'post': 1}"
+55,9,,5.89,32.0,{'comment': 9}
+56,3,,1.67,11.33,{'comment': 3}
+57,6,,40.5,36.0,{'comment': 6}
+58,3,,2.0,11.33,{'comment': 3}
+59,23,"MentalHealth, AskDocs",36.65,48.96,"{'comment': 21, 'post': 2}"
+60,9,medical,3.11,43.0,"{'comment': 8, 'post': 1}"
+61,5,,1.8,24.0,{'comment': 5}
+62,6,,77.5,50.17,{'comment': 6}
+63,20,,3.15,23.5,{'comment': 20}
+64,5,,19.8,27.8,{'comment': 5}
+65,3,,16.67,14.67,{'comment': 3}
+66,6,ChronicIllness,15.17,39.17,"{'comment': 5, 'post': 1}"
+67,22,medicine,49.77,57.32,"{'comment': 20, 'post': 2}"
+68,5,,10.6,14.2,{'comment': 5}
+69,12,,10.17,25.58,{'comment': 12}
+70,3,,2.0,23.0,{'comment': 3}
+71,9,,18.11,36.67,{'comment': 9}
+72,11,MentalHealth,7.09,26.73,"{'comment': 10, 'post': 1}"
+73,83,ChronicIllness,11.06,45.2,"{'comment': 82, 'post': 1}"
+74,7,,7.86,42.86,{'comment': 7}
+75,7,,2.29,22.29,{'comment': 7}
+76,7,,3.14,7.43,{'comment': 7}
+77,3,,1.67,14.0,{'comment': 3}
+78,6,,135.17,29.33,{'comment': 6}
+79,3,healthinsurance,17.67,30.33,"{'comment': 2, 'post': 1}"
+80,6,AskDocs,106.5,129.0,"{'comment': 5, 'post': 1}"
+81,5,,2.4,39.2,{'comment': 5}
+82,3,,1.33,30.67,{'comment': 3}
+83,2,,-7.0,10.0,{'comment': 2}
+84,8,medicine,98.25,50.62,"{'comment': 7, 'post': 1}"
+85,6,,0.83,25.33,{'comment': 6}
+86,20,Insurance,6.75,49.3,"{'comment': 19, 'post': 1}"
+87,7,,31.0,8.43,{'comment': 7}
+88,7,,2.29,5.57,{'comment': 7}
+89,3,,1.67,28.33,{'comment': 3}
+90,14,,26.64,40.86,{'comment': 14}
+91,8,HealthIT,0.75,63.5,"{'comment': 7, 'post': 1}"
+92,11,medical,13.64,32.82,"{'comment': 9, 'post': 2}"
+93,7,Pharmacy,29.86,41.29,"{'comment': 6, 'post': 1}"
+94,5,,19.6,19.4,{'comment': 5}
+95,12,MentalHealth,22.08,79.17,"{'comment': 11, 'post': 1}"
+96,7,,23.29,23.14,{'comment': 7}
+97,7,,1.43,67.43,{'comment': 7}
+98,11,,16.45,59.91,{'comment': 11}
+99,10,ChronicIllness,8.4,33.2,"{'comment': 9, 'post': 1}"
+100,8,AskDocs,213.75,76.5,"{'comment': 7, 'post': 1}"
+101,24,healthinsurance,18.67,34.71,"{'comment': 23, 'post': 1}"
+102,10,AskDocs,141.2,52.6,"{'comment': 9, 'post': 1}"
+103,6,,1.83,182.5,{'comment': 6}
+104,11,,49.36,17.91,{'comment': 11}
+105,8,,21.75,43.75,{'comment': 8}
+106,12,,19.33,12.0,{'comment': 12}
+107,5,,11.6,48.6,{'comment': 5}
+108,3,,1.0,13.33,{'comment': 3}
+109,9,,65.78,60.56,{'comment': 9}
+110,7,,42.71,116.71,{'comment': 7}
+111,3,,1.33,18.0,{'comment': 3}
+112,3,,6.33,21.67,{'comment': 3}
+113,7,,2.29,9.43,{'comment': 7}
+114,9,Medicare,3.22,67.78,"{'comment': 8, 'post': 1}"
+115,4,,4.75,39.25,{'comment': 4}
+116,13,Pharmacy,12.23,50.46,"{'comment': 11, 'post': 2}"
+117,16,healthinsurance,50.25,133.25,"{'comment': 15, 'post': 1}"
+118,11,medicine,69.45,37.64,"{'comment': 10, 'post': 1}"
+119,8,medical,149.5,49.62,"{'comment': 7, 'post': 1}"
+120,8,,1.75,29.25,{'comment': 8}
+121,7,,17.57,22.29,{'comment': 7}
+122,7,,35.14,67.14,{'comment': 7}
+123,54,AskDocs,47.98,37.72,"{'comment': 53, 'post': 1}"
+124,4,,2.5,11.0,{'comment': 4}
+125,5,,5.4,11.6,{'comment': 5}
+126,5,medical,6.6,36.6,"{'comment': 4, 'post': 1}"
+127,8,,8.5,25.0,{'comment': 8}
+128,5,,21.6,19.8,{'comment': 5}
+129,20,"medicine, healthinsurance",142.45,42.6,"{'comment': 17, 'post': 3}"
+130,5,,24.2,12.4,{'comment': 5}
+131,5,AskDocs,245.0,152.2,"{'comment': 4, 'post': 1}"
+132,10,MentalHealth,35.2,72.3,"{'comment': 9, 'post': 1}"
+133,6,,17.5,29.83,{'comment': 6}
+134,21,Medicaid,7.86,37.52,"{'comment': 20, 'post': 1}"
+135,5,healthinsurance,4.2,68.4,"{'comment': 4, 'post': 1}"
+136,3,,14.67,23.67,{'comment': 3}
+137,7,,37.0,17.71,{'comment': 7}
+138,3,,6.67,19.33,{'comment': 3}
+139,5,medicine,75.8,52.0,"{'comment': 4, 'post': 1}"
+140,5,,11.6,23.8,{'comment': 5}
+141,6,,19.0,85.17,{'comment': 6}
+142,3,,4.67,17.33,{'comment': 3}
+143,4,,21.75,17.0,{'comment': 4}
+144,13,,9.85,42.69,{'comment': 13}
+145,4,,3.75,15.75,{'comment': 4}
+146,5,medicine,55.4,84.0,"{'comment': 4, 'post': 1}"
+147,8,,52.38,53.38,{'comment': 8}
+148,5,,26.2,24.6,{'comment': 5}
+149,5,ChronicIllness,8.4,62.4,"{'comment': 4, 'post': 1}"
+150,5,MentalHealth,32.8,67.8,"{'comment': 4, 'post': 1}"
+151,9,healthinsurance,9.0,84.22,"{'comment': 8, 'post': 1}"
+152,8,healthinsurance,6.62,61.62,"{'comment': 7, 'post': 1}"
+153,5,,2.4,22.0,{'comment': 5}
+154,16,Medicare,3.88,85.75,"{'comment': 15, 'post': 1}"
+155,7,,13.43,18.29,{'comment': 7}
+156,6,,40.33,58.83,{'comment': 6}
+157,5,,1.4,6.0,{'comment': 5}
+158,3,,6.0,23.0,{'comment': 3}
+159,22,"ChronicIllness, healthinsurance",16.5,38.41,"{'comment': 20, 'post': 2}"
+160,3,,1.33,33.0,{'comment': 3}
+161,5,,37.8,78.6,{'comment': 5}
+162,3,,2.67,9.33,{'comment': 3}
+163,5,Insurance,12.8,42.2,"{'comment': 4, 'post': 1}"
+164,12,AskDocs,123.0,60.92,"{'comment': 11, 'post': 1}"
+165,3,,6.67,23.33,{'comment': 3}
+166,3,,5.0,27.67,{'comment': 3}
+167,6,,3.33,26.5,{'comment': 6}
+168,7,,4.43,11.0,{'comment': 7}
+169,8,,1.75,14.12,{'comment': 8}
+170,6,MentalHealth,18.0,54.0,"{'comment': 5, 'post': 1}"
+171,4,healthinsurance,8.5,45.25,"{'comment': 3, 'post': 1}"
+172,7,,3.0,17.71,{'comment': 7}
+173,3,,5.0,58.0,{'comment': 3}
+174,7,,6.71,28.57,{'comment': 7}
+175,11,AskDocs,54.09,106.64,"{'comment': 10, 'post': 1}"
+176,6,MentalHealth,31.17,80.0,"{'comment': 5, 'post': 1}"
+177,3,,2.33,23.33,{'comment': 3}
+178,7,,17.29,13.0,{'comment': 7}
+179,3,,-1.0,14.67,{'comment': 3}
+180,13,Pharmacy,8.85,85.15,"{'comment': 12, 'post': 1}"
+181,5,,18.6,17.6,{'comment': 5}
+182,8,,15.25,18.5,{'comment': 8}
+183,9,,2.22,31.22,{'comment': 9}
+184,5,,6.8,48.6,{'comment': 5}
+185,4,,79.0,18.0,{'comment': 4}
+186,3,,1.33,47.67,{'comment': 3}
+187,7,healthinsurance,8.57,52.86,"{'comment': 6, 'post': 1}"
+188,15,,40.53,45.13,{'comment': 15}
+189,7,AskDocs,251.86,90.57,"{'comment': 6, 'post': 1}"
+190,11,MentalHealth,12.91,117.91,"{'comment': 10, 'post': 1}"
+191,8,,28.25,95.75,{'comment': 8}
+192,6,,7.0,63.33,{'comment': 6}
+193,8,,8.5,27.62,{'comment': 8}
+194,42,HealthIT,5.19,78.86,"{'comment': 36, 'post': 6}"
+195,7,,11.86,62.71,{'comment': 7}
+196,8,,4.38,29.62,{'comment': 8}
+197,6,,4.83,54.0,{'comment': 6}
+198,5,HealthIT,1.2,47.4,"{'comment': 4, 'post': 1}"
+199,4,healthinsurance,5.5,51.25,"{'comment': 3, 'post': 1}"
+200,23,medicine,105.91,58.7,"{'comment': 21, 'post': 2}"
+201,5,AskDocs,49.0,75.6,"{'comment': 4, 'post': 1}"
+202,20,Medicare,5.8,28.7,"{'comment': 19, 'post': 1}"
+203,22,,69.45,37.14,{'comment': 22}
+204,5,,80.8,179.2,{'comment': 5}
+205,6,,9.33,55.67,{'comment': 6}
+206,5,,9.8,36.2,{'comment': 5}
+207,26,,12.85,13.08,{'comment': 26}
+208,3,,19.67,50.0,{'comment': 3}
+209,4,,1.5,16.5,{'comment': 4}
+210,20,,13.8,28.05,{'comment': 20}
+211,4,,-2.75,21.5,{'comment': 4}
+212,3,healthinsurance,70.0,41.33,"{'comment': 2, 'post': 1}"
+213,6,,1.17,11.5,{'comment': 6}
+214,4,,4.5,11.0,{'comment': 4}
+215,3,,9.0,45.0,{'comment': 3}
+216,5,,2.4,52.0,{'comment': 5}
+217,3,,25.0,18.67,{'comment': 3}
+218,3,,1.67,17.0,{'comment': 3}
+219,11,healthinsurance,14.27,25.45,"{'comment': 10, 'post': 1}"
+220,7,,1.86,36.57,{'comment': 7}
+221,3,,-0.33,26.67,{'comment': 3}
+222,35,Insurance,5.86,42.74,"{'comment': 32, 'post': 3}"
+223,3,,6.67,15.0,{'comment': 3}
+224,7,,7.43,75.0,{'comment': 7}
+225,10,,0.6,139.5,{'comment': 10}
+226,9,,33.22,9.44,{'comment': 9}
+227,5,AskDocs,369.2,131.8,"{'comment': 4, 'post': 1}"
+228,37,"HealthIT, HealthcareIT",10.62,102.59,"{'comment': 30, 'post': 7}"
+229,13,medical,15.0,62.0,"{'comment': 12, 'post': 1}"
+230,4,,44.0,12.75,{'comment': 4}
+231,5,Insurance,11.2,45.0,"{'comment': 4, 'post': 1}"
+232,3,,1.33,21.33,{'comment': 3}
+233,4,,6.0,55.5,{'comment': 4}
+234,3,,0.33,16.33,{'comment': 3}
+235,11,AskDocs,74.18,129.45,"{'comment': 10, 'post': 1}"
+236,3,,4.67,49.33,{'comment': 3}
+237,5,Insurance,32.0,60.2,"{'comment': 4, 'post': 1}"
+238,16,healthinsurance,10.75,51.19,"{'comment': 15, 'post': 1}"
+239,3,,7.0,11.0,{'comment': 3}
+240,4,,0.75,39.75,{'comment': 4}
+241,12,MentalHealth,13.92,90.42,"{'comment': 11, 'post': 1}"
+242,8,,7.75,177.38,{'comment': 8}
+243,8,,72.75,37.0,{'comment': 8}
+244,9,,89.56,44.44,{'comment': 9}
+245,3,,4.0,18.67,{'comment': 3}
+246,4,,1.75,27.75,{'comment': 4}
+247,4,healthinsurance,15.0,86.0,"{'comment': 3, 'post': 1}"
+248,4,,4.25,43.0,{'comment': 4}
+249,3,,0.67,16.0,{'comment': 3}
+250,3,,6.33,23.33,{'comment': 3}
+251,4,healthinsurance,6.75,76.0,"{'comment': 3, 'post': 1}"
+252,6,,5.0,10.0,{'comment': 6}
+253,4,,3.0,33.5,{'comment': 4}
+254,7,Medicare,5.43,30.43,"{'comment': 6, 'post': 1}"
+255,8,MentalHealth,17.88,128.12,"{'comment': 7, 'post': 1}"
+256,5,Insurance,8.4,87.2,"{'comment': 4, 'post': 1}"
+257,3,,1.33,28.67,{'comment': 3}
+258,8,Insurance,43.5,47.12,"{'comment': 7, 'post': 1}"
+259,5,,2.6,179.0,{'comment': 5}
+260,3,,4.33,63.33,{'comment': 3}
+261,3,,1.33,34.33,{'comment': 3}
+262,5,,5.6,31.0,{'comment': 5}
+263,4,,6.75,45.25,{'comment': 4}
+264,9,,2.78,39.44,{'comment': 9}
+265,7,healthinsurance,5.43,41.43,"{'comment': 6, 'post': 1}"
+266,9,ChronicIllness,17.11,121.0,"{'comment': 7, 'post': 2}"
+267,5,,1.6,31.0,{'comment': 5}
+268,7,healthinsurance,5.29,53.71,"{'comment': 6, 'post': 1}"
+269,8,,14.12,35.25,{'comment': 8}
+270,4,,2.25,25.5,{'comment': 4}
+271,4,,9.75,31.25,{'comment': 4}
+272,5,healthinsurance,0.4,25.6,"{'comment': 4, 'post': 1}"
+273,6,healthinsurance,4.83,103.17,"{'comment': 5, 'post': 1}"
+274,4,,2.5,12.0,{'comment': 4}
+275,10,,3.7,42.8,{'comment': 10}
+276,3,,4.33,222.67,{'comment': 3}
+277,3,healthinsurance,68.0,53.67,"{'post': 2, 'comment': 1}"
+278,12,medicine,54.08,53.08,"{'comment': 11, 'post': 1}"
+279,15,Insurance,5.93,41.0,"{'comment': 14, 'post': 1}"
+280,2,,4.0,117.5,{'comment': 2}
+281,6,,4.5,25.33,{'comment': 6}
+282,13,"AskDocs, ChronicIllness",121.46,178.46,"{'comment': 10, 'post': 3}"
+283,9,,69.22,33.11,{'comment': 9}
+284,5,,2.8,23.2,{'comment': 5}
+285,3,,14.33,28.0,{'comment': 3}
+286,5,,56.6,42.0,{'comment': 5}
+287,4,,1.0,16.5,{'comment': 4}
+288,6,,26.0,15.5,{'comment': 6}
+289,52,Pharmacy,19.13,99.1,"{'comment': 48, 'post': 4}"
+290,5,,24.0,8.8,{'comment': 5}
+291,3,,2.67,34.33,{'comment': 3}
+292,5,,1.4,15.2,{'comment': 5}
+293,5,,2.8,47.2,{'comment': 5}
+294,3,,5.67,28.33,{'comment': 3}
+295,7,,3.71,20.0,{'comment': 7}
+296,5,,8.4,56.6,{'comment': 5}
+297,4,,14.75,29.5,{'comment': 4}
+298,3,,1.67,93.0,{'comment': 3}
+299,17,Medicaid,2.18,73.65,"{'comment': 16, 'post': 1}"
+300,3,,22.0,36.67,{'comment': 3}
+301,6,,1.83,18.83,{'comment': 6}
+302,4,,4.0,68.75,{'comment': 4}
+303,19,,6.84,53.32,{'comment': 19}
+304,6,,8.0,24.83,{'comment': 6}
+305,8,Medicare,3.38,50.38,"{'comment': 7, 'post': 1}"
+306,3,,1.33,98.33,{'comment': 3}
+307,3,,6.0,64.33,{'comment': 3}
+308,3,,33.33,111.67,{'comment': 3}
+309,3,,5.0,13.0,{'comment': 3}
+310,29,,5.45,26.93,{'comment': 29}
+311,6,,1.5,45.0,{'comment': 6}
+312,3,,3.67,35.0,{'comment': 3}
+313,12,,3.0,48.08,{'comment': 12}
+314,6,healthinsurance,44.5,58.33,"{'comment': 5, 'post': 1}"
+315,61,MentalHealth,9.43,26.36,"{'comment': 59, 'post': 2}"
+316,9,healthinsurance,6.89,38.67,"{'comment': 8, 'post': 1}"
+317,15,,4.13,25.87,{'comment': 15}
+318,4,healthinsurance,3.25,67.5,"{'comment': 3, 'post': 1}"
+319,3,,-0.33,60.33,{'comment': 3}
+320,4,,2.75,25.25,{'comment': 4}
+321,6,,1.5,20.17,{'comment': 6}
+322,5,,3.0,19.2,{'comment': 5}
+323,6,,3.17,101.0,{'comment': 6}
+324,21,Medicare,9.71,31.05,"{'comment': 19, 'post': 2}"
+325,6,,3.83,114.17,{'comment': 6}
+326,3,,5.0,11.0,{'comment': 3}
+327,3,,17.67,70.0,{'comment': 3}
+328,5,healthinsurance,9.0,50.8,"{'comment': 4, 'post': 1}"
+329,6,,8.0,56.0,{'comment': 6}
+330,5,,58.0,23.8,{'comment': 5}
+331,5,,5.6,10.4,{'comment': 5}
+332,13,,1.54,23.92,{'comment': 13}
+333,7,Medicaid,16.43,33.86,"{'comment': 6, 'post': 1}"
+334,11,,3.64,17.91,{'comment': 11}
+335,5,,1.8,12.4,{'comment': 5}
+336,4,healthinsurance,8.0,61.5,"{'comment': 3, 'post': 1}"
+337,11,,314.45,104.55,{'comment': 11}
+338,11,,3.36,78.18,{'comment': 11}
+339,5,,3.4,35.4,{'comment': 5}
+340,3,,23.0,25.0,{'comment': 3}
+341,5,Medicaid,11.6,22.8,"{'comment': 4, 'post': 1}"
+342,18,MentalHealth,9.72,124.28,"{'comment': 17, 'post': 1}"
+343,7,,1.86,68.43,{'comment': 7}
+344,4,,10.5,43.75,{'comment': 4}
+345,4,healthinsurance,7.75,61.0,"{'comment': 3, 'post': 1}"
+346,5,,-0.6,32.4,{'comment': 5}
+347,3,,1.33,10.0,{'comment': 3}
+348,38,,5.82,15.97,{'comment': 38}
+349,6,,3.33,92.17,{'comment': 6}
+350,25,,4.68,50.2,{'comment': 25}
+351,11,ChronicIllness,57.45,163.82,"{'comment': 9, 'post': 2}"
+352,8,,6.38,109.12,{'comment': 8}
+353,27,,136.11,43.7,{'comment': 27}
+354,6,,8.83,102.33,{'comment': 6}
+355,7,healthinsurance,9.14,170.86,"{'comment': 5, 'post': 2}"
+356,5,,28.0,31.4,{'comment': 5}
+357,4,,1.0,178.25,{'comment': 4}
+358,11,,3.09,115.55,{'comment': 11}
+359,116,"Medicare, healthinsurance, healthcare",5.26,56.64,"{'comment': 112, 'post': 4}"
+360,13,healthinsurance,5.38,108.54,"{'comment': 12, 'post': 1}"
+361,5,,0.6,32.2,{'comment': 5}
+362,18,MentalHealth,56.39,166.61,"{'comment': 16, 'post': 2}"
+363,4,,2.0,26.0,{'comment': 4}
+364,3,,14.0,102.33,{'comment': 3}
+365,12,healthinsurance,13.33,92.0,"{'comment': 10, 'post': 2}"
+366,3,,1.67,9.67,{'comment': 3}
+367,3,,9.0,21.67,{'comment': 3}
+368,4,,9.25,17.0,{'comment': 4}
+369,3,,2.0,41.33,{'comment': 3}
+370,5,healthinsurance,1.2,50.8,"{'comment': 4, 'post': 1}"
+371,15,healthinsurance,9.87,51.53,"{'comment': 14, 'post': 1}"
+372,6,,1.0,30.67,{'comment': 6}
+373,5,healthinsurance,5.4,149.4,"{'comment': 4, 'post': 1}"
+374,7,,3.0,103.14,{'comment': 7}
+375,12,healthinsurance,19.83,119.17,"{'comment': 11, 'post': 1}"
+376,7,,6.29,13.14,{'comment': 7}
+377,18,healthinsurance,8.33,61.83,"{'comment': 16, 'post': 2}"
+378,10,healthinsurance,5.9,191.5,"{'comment': 9, 'post': 1}"
+379,3,,5.0,146.33,{'comment': 3}
+380,9,healthinsurance,6.56,129.67,"{'comment': 7, 'post': 2}"
+381,3,,1.67,11.33,{'comment': 3}
+382,17,healthinsurance,8.76,41.41,"{'comment': 16, 'post': 1}"
+383,5,,6.4,39.0,{'comment': 5}
+384,11,healthinsurance,7.55,56.73,"{'comment': 8, 'post': 3}"
+385,7,,6.86,15.71,{'comment': 7}
+386,3,,6.33,22.67,{'comment': 3}
+387,8,,0.0,58.75,{'comment': 8}
+388,5,,10.0,48.4,{'comment': 5}
+389,8,,2.25,13.12,{'comment': 8}
+390,26,,4.27,12.69,{'comment': 26}
+391,21,,6.14,27.86,{'comment': 21}
+392,5,,38.6,19.8,{'comment': 5}
+393,6,,1.67,7.5,{'comment': 6}
+394,8,,1.25,8.38,{'comment': 8}
+395,17,,11.65,8.24,{'comment': 17}
