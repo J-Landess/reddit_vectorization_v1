@@ -14,6 +14,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
 from sentiment import VaderSentimentAnalyzer, TransformerSentimentAnalyzer
 from config import DATABASE_CONFIG
+from database.database_manager import DatabaseManager
+from export_to_csv import export_database_to_csv
 
 
 def get_database_connection():
@@ -21,27 +23,17 @@ def get_database_connection():
     return sqlite3.connect(DATABASE_CONFIG['path'])
 
 
-def get_posts_without_sentiment(limit: Optional[int] = None) -> List[Tuple[int, str, str]]:
+def get_posts_without_sentiment(limit: Optional[int] = None) -> List[Tuple[str, str, str]]:
     """Get posts that don't have sentiment analysis yet."""
     conn = get_database_connection()
     cursor = conn.cursor()
-    
-    # Check if sentiment columns exist
-    cursor.execute("PRAGMA table_info(posts)")
-    columns = [column[1] for column in cursor.fetchall()]
-    
-    if 'sentiment_label' not in columns or 'sentiment_score' not in columns:
-        print("Adding sentiment columns to posts table...")
-        cursor.execute("ALTER TABLE posts ADD COLUMN sentiment_label TEXT")
-        cursor.execute("ALTER TABLE posts ADD COLUMN sentiment_score REAL")
-        conn.commit()
     
     # Get posts without sentiment analysis
     query = """
         SELECT id, cleaned_text, title 
         FROM posts 
         WHERE (cleaned_text IS NOT NULL AND cleaned_text != '') 
-        AND (sentiment_label IS NULL OR sentiment_score IS NULL)
+        AND (sentiment IS NULL OR confidence IS NULL)
     """
     
     if limit:
@@ -54,27 +46,17 @@ def get_posts_without_sentiment(limit: Optional[int] = None) -> List[Tuple[int, 
     return posts
 
 
-def get_comments_without_sentiment(limit: Optional[int] = None) -> List[Tuple[int, str]]:
+def get_comments_without_sentiment(limit: Optional[int] = None) -> List[Tuple[str, str]]:
     """Get comments that don't have sentiment analysis yet."""
     conn = get_database_connection()
     cursor = conn.cursor()
-    
-    # Check if sentiment columns exist
-    cursor.execute("PRAGMA table_info(comments)")
-    columns = [column[1] for column in cursor.fetchall()]
-    
-    if 'sentiment_label' not in columns or 'sentiment_score' not in columns:
-        print("Adding sentiment columns to comments table...")
-        cursor.execute("ALTER TABLE comments ADD COLUMN sentiment_label TEXT")
-        cursor.execute("ALTER TABLE comments ADD COLUMN sentiment_score REAL")
-        conn.commit()
     
     # Get comments without sentiment analysis
     query = """
         SELECT id, cleaned_text 
         FROM comments 
         WHERE cleaned_text IS NOT NULL AND cleaned_text != ''
-        AND (sentiment_label IS NULL OR sentiment_score IS NULL)
+        AND (sentiment IS NULL OR confidence IS NULL)
     """
     
     if limit:
@@ -87,14 +69,14 @@ def get_comments_without_sentiment(limit: Optional[int] = None) -> List[Tuple[in
     return comments
 
 
-def update_post_sentiment(post_id: int, sentiment_label: str, sentiment_score: float):
+def update_post_sentiment(post_id: str, sentiment_label: str, sentiment_score: float):
     """Update post with sentiment analysis results."""
     conn = get_database_connection()
     cursor = conn.cursor()
     
     cursor.execute("""
         UPDATE posts 
-        SET sentiment_label = ?, sentiment_score = ?
+        SET sentiment = ?, confidence = ?
         WHERE id = ?
     """, (sentiment_label, sentiment_score, post_id))
     
@@ -102,14 +84,14 @@ def update_post_sentiment(post_id: int, sentiment_label: str, sentiment_score: f
     conn.close()
 
 
-def update_comment_sentiment(comment_id: int, sentiment_label: str, sentiment_score: float):
+def update_comment_sentiment(comment_id: str, sentiment_label: str, sentiment_score: float):
     """Update comment with sentiment analysis results."""
     conn = get_database_connection()
     cursor = conn.cursor()
     
     cursor.execute("""
         UPDATE comments 
-        SET sentiment_label = ?, sentiment_score = ?
+        SET sentiment = ?, confidence = ?
         WHERE id = ?
     """, (sentiment_label, sentiment_score, comment_id))
     
@@ -136,6 +118,11 @@ def analyze_existing_data(analyzer_type: str = 'vader', limit: Optional[int] = N
         analyzer = VaderSentimentAnalyzer()
     print("✅ Analyzer ready")
     
+    # Ensure the database has required tables/columns
+    # This also adds missing sentiment/confidence columns if needed
+    with DatabaseManager(DATABASE_CONFIG['path']):
+        pass
+
     # Process posts
     print("\n📝 Processing posts...")
     posts = get_posts_without_sentiment(limit)
@@ -181,6 +168,12 @@ def analyze_existing_data(analyzer_type: str = 'vader', limit: Optional[int] = N
     
     print(f"✅ Processed {comments_processed} comments")
     
+    # Export CSVs reflecting the latest sentiment updates
+    try:
+        export_database_to_csv(DATABASE_CONFIG['path'], './csv_exports')
+    except Exception as e:
+        print(f"⚠️  Export failed: {e}")
+
     # Summary
     print("\n" + "=" * 80)
     print("📋 SUMMARY")

@@ -60,26 +60,31 @@ def export_database_to_csv(db_path: str, output_dir: str = './csv_exports'):
                 if col in df.columns:
                     df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
             
+            # Ensure sentiment columns exist in export even if missing
+            for col in ['sentiment', 'confidence']:
+                if col not in df.columns:
+                    df[col] = '' if col == 'sentiment' else 0.0
+
             # Fill remaining NaN values
             df = df.fillna('')
             
             return df
         
-        # Clean and export posts
+        # Clean and export posts (overwrite canonical filenames)
         if not posts_df.empty:
             posts_clean = clean_dataframe(posts_df)
             posts_file = os.path.join(output_dir, 'reddit_posts.csv')
             posts_clean.to_csv(posts_file, index=False, encoding='utf-8')
             print(f"✅ Exported {len(posts_clean)} posts to {posts_file}")
         
-        # Clean and export comments
+        # Clean and export comments (overwrite canonical filenames)
         if not comments_df.empty:
             comments_clean = clean_dataframe(comments_df)
             comments_file = os.path.join(output_dir, 'reddit_comments.csv')
             comments_clean.to_csv(comments_file, index=False, encoding='utf-8')
             print(f"✅ Exported {len(comments_clean)} comments to {comments_file}")
         
-        # Export combined data
+        # Export combined data (overwrite canonical filename)
         all_clean = clean_dataframe(df)
         combined_file = os.path.join(output_dir, 'reddit_all_data.csv')
         all_clean.to_csv(combined_file, index=False, encoding='utf-8')
@@ -321,6 +326,8 @@ def main():
                        help='Output directory for CSV files')
     parser.add_argument('--create-notebook', action='store_true',
                        help='Create Jupyter notebook template')
+    parser.add_argument('--prune-old', action='store_true',
+                       help='Delete old timestamped CSVs and keep canonical files only')
     
     args = parser.parse_args()
     
@@ -334,6 +341,21 @@ def main():
     
     try:
         export_database_to_csv(args.db_path, args.output_dir)
+
+        # Optional prune: remove old timestamped CSVs lacking sentiment or duplicates
+        if args.prune_old:
+            removed = 0
+            for name in os.listdir(args.output_dir):
+                if not name.endswith('.csv'):
+                    continue
+                if name.startswith('reddit_posts_') or name.startswith('reddit_comments_') or name.startswith('reddit_all_data_'):
+                    try:
+                        os.remove(os.path.join(args.output_dir, name))
+                        removed += 1
+                    except Exception:
+                        pass
+            if removed:
+                print(f"🧹 Pruned {removed} old timestamped CSV(s)")
         
         if args.create_notebook:
             create_analysis_notebook(args.output_dir)
