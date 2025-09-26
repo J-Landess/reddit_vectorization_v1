@@ -83,3 +83,13 @@ HISTORICAL_TRACKING = {
     'backup_database': os.getenv('BACKUP_DATABASE', 'true').lower() == 'true',
     'create_run_summary': os.getenv('CREATE_RUN_SUMMARY', 'true').lower() == 'true'
 }
+
+# Classification configuration
+CLASSIFICATION_CONFIG = {
+    'enabled': os.getenv('CLASSIFICATION_ENABLED', 'true').lower() == 'true',
+    'classifier_type': os.getenv('CLASSIFIER_TYPE', 'hybrid'),  # 'rule_based', 'ml', 'hybrid'
+    'ml_model_type': os.getenv('ML_MODEL_TYPE', 'random_forest'),  # 'random_forest', 'logistic_regression', 'svm'
+    'rule_confidence_threshold': float(os.getenv('RULE_CONFIDENCE_THRESHOLD', '0.7')),
+    'ensemble_mode': os.getenv('ENSEMBLE_MODE', 'false').lower() == 'true',
+    'auto_train_ml': os.getenv('AUTO_TRAIN_ML', 'false').lower() == 'true'
+}
