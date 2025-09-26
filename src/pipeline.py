@@ -18,8 +18,9 @@ from database.database_manager import DatabaseManager
 from clustering.cluster_analyzer import ClusterAnalyzer
 from analysis.analyzer import RedditAnalyzer
 from sentiment import SentimentAnalyzer, VaderSentimentAnalyzer, TransformerSentimentAnalyzer
+from classification import HybridClassifier
 from tracking.historical_tracker import HistoricalTracker
-from config import REDDIT_CONFIG, SUBREDDITS, COLLECTION_CONFIG, DATABASE_CONFIG, EMBEDDING_CONFIG, CLUSTERING_CONFIG, INTELLIGENT_FILTERING, HISTORICAL_TRACKING
+from config import REDDIT_CONFIG, SUBREDDITS, COLLECTION_CONFIG, DATABASE_CONFIG, EMBEDDING_CONFIG, CLUSTERING_CONFIG, INTELLIGENT_FILTERING, HISTORICAL_TRACKING, CLASSIFICATION_CONFIG
 
 # Set up logging
 logging.basicConfig(
@@ -46,6 +47,7 @@ class RedditAnalysisPipeline:
         self.cluster_analyzer = None
         self.analyzer = RedditAnalyzer()
         self.sentiment_analyzer: Optional[SentimentAnalyzer] = None
+        self.classification_analyzer: Optional[HybridClassifier] = None
         self.historical_tracker = HistoricalTracker() if HISTORICAL_TRACKING['enabled'] else None
         self.run_id = None
         
@@ -58,6 +60,21 @@ class RedditAnalysisPipeline:
             self.sentiment_analyzer = TransformerSentimentAnalyzer()
         else:
             self.sentiment_analyzer = VaderSentimentAnalyzer()
+        
+        # Initialize classification analyzer
+        if CLASSIFICATION_CONFIG['enabled']:
+            classifier_type = CLASSIFICATION_CONFIG['classifier_type']
+            if classifier_type == 'hybrid':
+                self.classification_analyzer = HybridClassifier(
+                    ml_model_type=CLASSIFICATION_CONFIG['ml_model_type'],
+                    rule_confidence_threshold=CLASSIFICATION_CONFIG['rule_confidence_threshold'],
+                    ensemble_mode=CLASSIFICATION_CONFIG['ensemble_mode']
+                )
+            else:
+                # For now, default to hybrid. Can add other types later
+                self.classification_analyzer = HybridClassifier()
+        else:
+            self.classification_analyzer = None
 
         logger.info(f"Reddit Analysis Pipeline initialized (sentiment: {analyzer_type})")
     
@@ -157,6 +174,20 @@ class RedditAnalysisPipeline:
                     item['sentiment'] = label
                     item['confidence'] = float(conf)
             
+            # Classification analysis
+            if self.classification_analyzer:
+                logger.info("Starting medical category classification")
+                for item in processed_data:
+                    text_source = item.get('cleaned_text') or item.get('text') or ''
+                    embedding = item.get('embedding')
+                    
+                    category, conf, probs = self.classification_analyzer.classify(text_source, embedding)
+                    item['category'] = category
+                    item['category_confidence'] = float(conf)
+                    item['category_probabilities'] = probs
+                
+                logger.info("Medical category classification completed")
+            
             # Get preprocessing statistics
             stats = self.text_cleaner.get_text_statistics(processed_data)
             logger.info(f"Preprocessing statistics: {stats}")
@@ -166,6 +197,55 @@ class RedditAnalysisPipeline:
         except Exception as e:
             logger.error(f"Error during data preprocessing: {e}")
             raise
+    
+    def train_classification_model(self, data: List[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """
+        Train the ML component of the classification system.
+        
+        Args:
+            data: Optional data to train on. If None, uses data from database.
+            
+        Returns:
+            Training metrics
+        """
+        if not self.classification_analyzer:
+            raise ValueError("Classification analyzer not initialized")
+        
+        if data is None:
+            # Get data from database
+            if not self.database_manager:
+                raise ValueError("Database manager not initialized")
+            
+            logger.info("Loading data from database for classification training")
+            data = self.database_manager.get_all_data(include_embeddings=True)
+        
+        if not data:
+            raise ValueError("No data available for training")
+        
+        # Filter data with embeddings
+        training_data = [item for item in data if item.get('embedding') and len(item.get('embedding', [])) > 0]
+        
+        if not training_data:
+            raise ValueError("No data with embeddings found for training")
+        
+        # Extract embeddings and labels
+        embeddings = [item['embedding'] for item in training_data]
+        
+        # For now, use rule-based classification to generate labels
+        # In a real scenario, you'd have manually labeled data
+        logger.info("Generating training labels using rule-based classifier")
+        labels = []
+        for item in training_data:
+            text = item.get('cleaned_text') or item.get('text') or ''
+            category, _, _ = self.classification_analyzer.rule_classifier.classify(text)
+            labels.append(category)
+        
+        # Train the ML component
+        logger.info(f"Training ML classifier on {len(embeddings)} samples")
+        metrics = self.classification_analyzer.train_ml_component(embeddings, labels)
+        
+        logger.info(f"Classification model training completed. Accuracy: {metrics.get('accuracy', 0):.3f}")
+        return metrics
     
     def generate_embeddings(self, processed_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """

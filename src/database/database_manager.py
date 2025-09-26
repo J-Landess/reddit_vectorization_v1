@@ -125,6 +125,13 @@ class DatabaseManager:
         except Exception as e:
             logger.error(f"Error ensuring sentiment columns: {e}")
             raise
+        
+        # Ensure classification columns exist (migrate if necessary)
+        try:
+            self._ensure_classification_columns()
+        except Exception as e:
+            logger.error(f"Error ensuring classification columns: {e}")
+            raise
 
     def _ensure_sentiment_columns(self) -> None:
         """Add sentiment and confidence columns to posts/comments if missing."""
@@ -146,6 +153,33 @@ class DatabaseManager:
             cursor.execute('ALTER TABLE comments ADD COLUMN sentiment TEXT')
         if not column_exists('comments', 'confidence'):
             cursor.execute('ALTER TABLE comments ADD COLUMN confidence REAL')
+
+        self.connection.commit()
+
+    def _ensure_classification_columns(self) -> None:
+        """Add classification columns to posts/comments if missing."""
+        cursor = self.connection.cursor()
+
+        def column_exists(table: str, column: str) -> bool:
+            cursor.execute(f"PRAGMA table_info({table})")
+            cols = [row[1] for row in cursor.fetchall()]
+            return column in cols
+
+        # Posts table
+        if not column_exists('posts', 'category'):
+            cursor.execute('ALTER TABLE posts ADD COLUMN category TEXT')
+        if not column_exists('posts', 'category_confidence'):
+            cursor.execute('ALTER TABLE posts ADD COLUMN category_confidence REAL')
+        if not column_exists('posts', 'category_probabilities'):
+            cursor.execute('ALTER TABLE posts ADD COLUMN category_probabilities TEXT')
+
+        # Comments table
+        if not column_exists('comments', 'category'):
+            cursor.execute('ALTER TABLE comments ADD COLUMN category TEXT')
+        if not column_exists('comments', 'category_confidence'):
+            cursor.execute('ALTER TABLE comments ADD COLUMN category_confidence REAL')
+        if not column_exists('comments', 'category_probabilities'):
+            cursor.execute('ALTER TABLE comments ADD COLUMN category_probabilities TEXT')
 
         self.connection.commit()
 
@@ -188,8 +222,8 @@ class DatabaseManager:
                         id, title, text, cleaned_text, author, subreddit,
                         score, upvote_ratio, num_comments, created_utc, url,
                         is_self, word_count, char_count, embedding, embedding_dim, cluster_id, run_id,
-                        sentiment, confidence
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        sentiment, confidence, category, category_confidence, category_probabilities
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     post['id'],
                     post.get('title', ''),
@@ -210,7 +244,10 @@ class DatabaseManager:
                     post.get('cluster_id'),
                     self.current_run_id,
                     post.get('sentiment'),
-                    post.get('confidence')
+                    post.get('confidence'),
+                    post.get('category'),
+                    post.get('category_confidence'),
+                    json.dumps(post.get('category_probabilities', {}))
                 ))
                 if cursor.rowcount == 1:
                     inserted_count += 1
@@ -247,8 +284,8 @@ class DatabaseManager:
                     INSERT OR IGNORE INTO comments (
                         id, text, cleaned_text, author, post_id, score,
                         created_utc, word_count, char_count, embedding, embedding_dim, cluster_id, run_id,
-                        sentiment, confidence
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        sentiment, confidence, category, category_confidence, category_probabilities
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     comment['id'],
                     comment.get('text', ''),
@@ -264,7 +301,10 @@ class DatabaseManager:
                     comment.get('cluster_id'),
                     self.current_run_id,
                     comment.get('sentiment'),
-                    comment.get('confidence')
+                    comment.get('confidence'),
+                    comment.get('category'),
+                    comment.get('category_confidence'),
+                    json.dumps(comment.get('category_probabilities', {}))
                 ))
                 if cursor.rowcount == 1:
                     inserted_count += 1
@@ -446,7 +486,8 @@ class DatabaseManager:
             cursor.execute('''
                 SELECT id, title, text, cleaned_text, author, subreddit,
                        score, upvote_ratio, num_comments, created_utc, url,
-                       is_self, word_count, char_count, cluster_id, sentiment, confidence
+                       is_self, word_count, char_count, cluster_id, sentiment, confidence,
+                       category, category_confidence, category_probabilities
                 FROM posts
             ''')
             posts_data = cursor.fetchall()
@@ -465,7 +506,8 @@ class DatabaseManager:
             # Export comments
             cursor.execute('''
                 SELECT id, text, cleaned_text, author, post_id, score,
-                       created_utc, word_count, char_count, cluster_id, sentiment, confidence
+                       created_utc, word_count, char_count, cluster_id, sentiment, confidence,
+                       category, category_confidence, category_probabilities
                 FROM comments
             ''')
             comments_data = cursor.fetchall()
