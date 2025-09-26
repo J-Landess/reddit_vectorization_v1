@@ -227,7 +227,7 @@ def main():
     
     try:
         # Build prototypes from database
-        embedding_classifier = build_prototypes_from_database(db_path, sample_size=1000)
+        embedding_classifier = build_prototypes_from_database(db_path, sample_size=2000)
         
         if not embedding_classifier:
             print("❌ Failed to build prototypes")
