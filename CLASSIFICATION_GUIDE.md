@@ -4,12 +4,13 @@ This guide explains the new medical category classification feature added to the
 
 ## 🎯 Overview
 
-The classification system automatically categorizes Reddit posts and comments into four medical-related categories:
+The classification system automatically categorizes Reddit posts and comments into five medical-related categories:
 
 - **Medical Insurance**: Health insurance plans, coverage, premiums, deductibles
 - **Medical Provider**: Doctors, nurses, clinics, hospitals, medical care
 - **Medical Broker**: Insurance brokers, agents, consultants, plan comparisons
 - **Employer**: Company benefits, HR, workplace health, employee coverage
+- **Policy Changes/Healthcare Legislation/Regulation**: Healthcare policy, legislation, regulations, reform, funding, compliance
 
 ## 🏗️ Architecture
 

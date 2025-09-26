@@ -85,6 +85,35 @@ class RuleBasedClassifier(ClassificationAnalyzer):
             ]
         }
         
+        # Policy Changes/Healthcare Legislation/Regulation keywords
+        self.policy_keywords = {
+            'exact': [
+                'healthcare policy', 'health policy', 'medical policy', 'healthcare legislation',
+                'health legislation', 'medical legislation', 'healthcare regulation', 'health regulation',
+                'medical regulation', 'healthcare reform', 'health reform', 'medical reform',
+                'affordable care act', 'aca', 'obamacare', 'medicare for all', 'single payer',
+                'healthcare bill', 'health bill', 'medical bill', 'healthcare law', 'health law',
+                'medical law', 'healthcare act', 'health act', 'medical act', 'healthcare mandate',
+                'health mandate', 'medical mandate', 'healthcare coverage', 'universal healthcare',
+                'healthcare system', 'health system', 'medical system', 'healthcare infrastructure',
+                'healthcare funding', 'health funding', 'medical funding', 'healthcare budget',
+                'health budget', 'medical budget', 'healthcare spending', 'health spending',
+                'medical spending', 'healthcare cost', 'health cost', 'medical cost',
+                'healthcare pricing', 'health pricing', 'medical pricing', 'healthcare transparency',
+                'health transparency', 'medical transparency', 'healthcare quality', 'health quality',
+                'medical quality', 'healthcare standards', 'health standards', 'medical standards',
+                'healthcare compliance', 'health compliance', 'medical compliance', 'healthcare oversight',
+                'health oversight', 'medical oversight', 'healthcare administration', 'health administration',
+                'medical administration', 'healthcare governance', 'health governance', 'medical governance'
+            ],
+            'partial': [
+                'policy', 'legislation', 'regulation', 'reform', 'bill', 'law', 'act', 'mandate',
+                'coverage', 'system', 'funding', 'budget', 'spending', 'cost', 'pricing',
+                'transparency', 'quality', 'standards', 'compliance', 'oversight', 'administration',
+                'governance', 'healthcare', 'health', 'medical'
+            ]
+        }
+        
         # Compile regex patterns for better matching
         self._compile_patterns()
     
@@ -106,7 +135,8 @@ class RuleBasedClassifier(ClassificationAnalyzer):
             'medical_insurance': self.insurance_keywords,
             'medical_provider': self.provider_keywords, 
             'medical_broker': self.broker_keywords,
-            'employer': self.employer_keywords
+            'employer': self.employer_keywords,
+            'policy_changes': self.policy_keywords
         }
         return keyword_map.get(category, {}).get(match_type, [])
     

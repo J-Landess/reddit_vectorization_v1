@@ -12,7 +12,8 @@ MEDICAL_CATEGORIES = {
     'medical_insurance': 'Medical Insurance',
     'medical_provider': 'Medical Provider', 
     'medical_broker': 'Medical Broker',
-    'employer': 'Employer'
+    'employer': 'Employer',
+    'policy_changes': 'Policy Changes/Healthcare Legislation/Regulation'
 }
 
 class ClassificationAnalyzer(ABC):

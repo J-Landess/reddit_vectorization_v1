@@ -27,12 +27,13 @@ class ClassificationAnalyzer:
         os.makedirs(output_dir, exist_ok=True)
         
         # Medical categories
-        self.categories = ['medical_insurance', 'medical_provider', 'medical_broker', 'employer']
+        self.categories = ['medical_insurance', 'medical_provider', 'medical_broker', 'employer', 'policy_changes']
         self.category_labels = {
             'medical_insurance': 'Medical Insurance',
             'medical_provider': 'Medical Provider',
             'medical_broker': 'Medical Broker',
-            'employer': 'Employer'
+            'employer': 'Employer',
+            'policy_changes': 'Policy Changes/Healthcare Legislation/Regulation'
         }
     
     def analyze_classification_results(self, data: List[Dict[str, Any]]) -> Dict[str, Any]:
