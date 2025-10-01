@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "reddit-analysis-pipeline"
+version = "0.1.0"
+description = "A pipeline for collecting, processing, and analyzing Reddit data with embeddings, clustering, topic modeling, and reports."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "Proprietary" }
+authors = [
+  { name = "Justin Landess" }
+]
+keywords = ["reddit", "nlp", "embeddings", "clustering", "topic-modeling", "data-pipeline"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "License :: Other/Proprietary License",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Software Development :: Libraries :: Python Modules"
+]
+dependencies = [
+  "praw==7.7.1",
+  "sentence-transformers==2.2.2",
+  "scikit-learn==1.3.2",
+  "hdbscan==0.8.33",
+  "pandas==2.1.4",
+  "numpy==1.24.4",
+  "beautifulsoup4==4.12.2",
+  "requests==2.31.0",
+  "python-dotenv==1.0.0",
+  "matplotlib==3.8.2",
+  "seaborn==0.13.0",
+  "plotly==5.17.0",
+  "wordcloud==1.9.2",
+  "gensim==4.3.2",
+  "bertopic==0.15.0",
+  "umap-learn==0.5.4",
+  "spacy==3.7.2",
+  "nltk==3.8.1",
+  "transformers>=4.41.0",
+  "torch>=2.2.0",
+  "datasets>=2.19.0",
+  "joblib>=1.3.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/justinlandess"
+Repository = "https://github.com/justinlandess/reddit"
+
+[project.scripts]
+reddit-pipeline = "pipeline:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
+
+
