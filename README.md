@@ -1,6 +1,22 @@
 # Reddit Data Analysis Pipeline
 
-A comprehensive Python pipeline for collecting, processing, and analyzing Reddit data with embeddings, clustering, and topic modeling. Designed for healthcare-related subreddits with intelligent filtering, historical run tracking, and CSV exports.
+A comprehensive Python package for collecting, processing, and analyzing Reddit data with embeddings, clustering, and topic modeling. Designed for healthcare-related subreddits with intelligent filtering, historical run tracking, and CSV exports.
+
+## 📦 Installation
+
+Install the package from PyPI:
+
+```bash
+pip install reddit-analysis-pipeline
+```
+
+Or install from source:
+
+```bash
+git clone https://github.com/justinlandess/reddit.git
+cd reddit
+pip install -e .
+```
 
 ## 🚀 Features
 
@@ -40,26 +56,9 @@ The pipeline is configured to analyze these healthcare-related subreddits:
  - r/HealthcareIT
  - r/Healthcare_IT
 
-## 🛠️ Installation
+## 🛠️ Setup
 
-1. **Clone or download the project**:
-   ```bash
-   cd /path/to/your/projects
-   # The project is already in your reddit directory
-   ```
-
-2. **(Recommended) Create a conda environment**:
-   ```bash
-   conda create -n reddit-analysis python=3.9 -y
-   conda activate reddit-analysis
-   ```
-
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Set up Reddit API credentials**:
+1. **Set up Reddit API credentials**:
    Create a `.env` file in the project root:
    ```bash
    REDDIT_CLIENT_ID=your_client_id_here
@@ -78,7 +77,30 @@ The pipeline is configured to analyze these healthcare-related subreddits:
 
 ### Basic Usage
 
-Run the complete pipeline (collection → preprocessing → embeddings → clustering → exports/plots):
+After installation, you can use the package in two ways:
+
+#### 1. Command Line Interface (CLI)
+
+Run the complete pipeline using the installed command:
+```bash
+reddit-pipeline
+```
+
+#### 2. Python API
+
+```python
+from reddit_analysis_pipeline import RedditAnalysisPipeline
+
+# Initialize pipeline
+pipeline = RedditAnalysisPipeline(analyzer_type='vader')
+
+# Run full pipeline
+pipeline.run_full_pipeline()
+```
+
+#### 3. Legacy Script Usage
+
+If you have the source code, you can still run the original scripts:
 ```bash
 python main.py
 ```
@@ -90,7 +112,27 @@ python main.py --analyzer transformer
 
 ### Advanced Usage
 
-Run with debug logging:
+#### CLI with debug logging:
+```bash
+reddit-pipeline --log-level DEBUG
+```
+
+#### Python API with custom configuration:
+```python
+from reddit_analysis_pipeline import RedditAnalysisPipeline
+import os
+
+# Set environment variables for configuration
+os.environ['SENTIMENT_ANALYZER'] = 'transformer'
+os.environ['CLUSTERING_ALGORITHM'] = 'kmeans'
+os.environ['N_CLUSTERS'] = '20'
+
+# Initialize and run
+pipeline = RedditAnalysisPipeline(analyzer_type='transformer')
+pipeline.run_full_pipeline()
+```
+
+#### Legacy script with debug logging:
 ```bash
 python main.py --log-level DEBUG
 ```
@@ -99,6 +141,31 @@ python main.py --log-level DEBUG
 
 You can choose the sentiment analyzer:
 
+#### CLI:
+```bash
+# Use default VADER
+reddit-pipeline --analyzer vader
+
+# Use Hugging Face transformer (distilbert-sst2)
+reddit-pipeline --analyzer transformer
+```
+
+#### Python API:
+```python
+# Use VADER
+pipeline = RedditAnalysisPipeline(analyzer_type='vader')
+
+# Use transformer
+pipeline = RedditAnalysisPipeline(analyzer_type='transformer')
+```
+
+#### Environment variable:
+```bash
+export SENTIMENT_ANALYZER=transformer
+reddit-pipeline
+```
+
+#### Legacy scripts:
 ```bash
 # Use default VADER
 python main.py --analyzer vader
@@ -107,14 +174,9 @@ python main.py --analyzer vader
 python main.py --analyzer transformer
 ```
 
-Environment variable alternative:
-
-```bash
-export SENTIMENT_ANALYZER=transformer
-python main.py
-```
-
 ### Focused utilities
+
+These utilities are available when you have the source code:
 
 - Export the database to CSVs:
 ```bash
@@ -204,26 +266,34 @@ export SENTIMENT_ANALYZER=vader          # or transformer
 
 ```
 reddit/
-├── main.py                 # Main entry point
+├── pyproject.toml         # Package configuration
+├── main.py                # Legacy main entry point
 ├── config.py              # Configuration settings
 ├── requirements.txt       # Python dependencies
-├── README.md             # This file
-├── src/                  # Source code
-│   ├── data_collection/  # Reddit API client
-│   ├── preprocessing/    # Text cleaning utilities
-│   ├── embeddings/       # Embedding generation
-│   ├── database/         # SQLite database manager
-│   ├── clustering/       # Clustering algorithms
-│   ├── analysis/         # Analysis and visualization
-│   ├── topic_modeling/   # Topic modeling (LDA, NMF, BERTopic)
-│   ├── tracking/         # Historical run tracking utilities
-│   └── pipeline.py       # Main pipeline orchestrator
-├── data/                 # Database storage
-├── outputs/              # Generated visualizations and reports
-├── csv_exports/          # CSV exports from DB (posts, comments, combined)
-├── historical_runs/      # Time-stamped preserved runs (DB backups, reports)
-└── logs/                 # Log files
+├── README.md              # This file
+├── src/                   # Source code (package)
+│   ├── data_collection/   # Reddit API client
+│   ├── preprocessing/     # Text cleaning utilities
+│   ├── embeddings/        # Embedding generation
+│   ├── database/          # SQLite database manager
+│   ├── clustering/        # Clustering algorithms
+│   ├── analysis/          # Analysis and visualization
+│   ├── topic_modeling/    # Topic modeling (LDA, NMF, BERTopic)
+│   ├── tracking/          # Historical run tracking utilities
+│   └── pipeline.py        # Main pipeline orchestrator
+├── data/                  # Database storage
+├── outputs/               # Generated visualizations and reports
+├── csv_exports/           # CSV exports from DB (posts, comments, combined)
+├── historical_runs/       # Time-stamped preserved runs (DB backups, reports)
+└── logs/                  # Log files
 ```
+
+### Package Installation
+
+When installed as a package, the main functionality is available through:
+
+- **CLI**: `reddit-pipeline` command
+- **Python API**: `from reddit_analysis_pipeline import RedditAnalysisPipeline`
 
 ## 🔧 Components
 
